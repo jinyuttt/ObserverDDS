@@ -101,9 +101,16 @@ namespace ObserverNet
                 case 6:
                     ProcessState(data);
                     break;
+                case 7:
+                    ProcessPubLisUpdate(data);
+                    break;
             }
         }
 
+        /// <summary>
+        /// 新增主题
+        /// </summary>
+        /// <param name="data"></param>
         private void ProcessNewToic(byte[]data)
         {
             var msg = DataPack.UnPackNewTopic(data);
@@ -115,11 +122,29 @@ namespace ObserverNet
 
         }
 
+        /// <summary>
+        /// 心跳
+        /// </summary>
+        /// <param name="data"></param>
         private void ProcessState(byte[]data)
         {
             var msg = DataPack.UnPackNodeState(data);
             //添加本地
             NodeList.dicRefresh[msg] = DateTime.Now.Second;
+        }
+
+        /// <summary>
+        /// 更新发布列表
+        /// </summary>
+        /// <param name="data"></param>
+        private void ProcessPubLisUpdate(byte[] data)
+        {
+            var dic = DataPack.UnPackUpdatePublicList(data);
+            //添加本地
+            foreach(var kv in dic)
+            {
+                PublishList.Publish.AddNode(kv.Key, kv.Value.ToArray());
+            }
         }
     }
 }

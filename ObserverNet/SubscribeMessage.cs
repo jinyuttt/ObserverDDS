@@ -21,6 +21,7 @@
 
 
 using System;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ObserverNet
@@ -28,10 +29,12 @@ namespace ObserverNet
     public  class SubscribeMessage
     {
         private static readonly Lazy<SubscribeMessage> obj = new Lazy<SubscribeMessage>();
-        private UDPSocket uDP = new UDPSocket();
-        private TcpServerSocket tcp = new TcpServerSocket();
-        private object lock_obj = new object();
-        private bool isInit = false;
+
+        private readonly UDPSocket uDP = new UDPSocket();
+        private readonly TcpServerSocket tcp = new TcpServerSocket();
+        private object lock_obj = new object();//
+        private bool isInit = false;//是否初始化
+        private readonly byte[] rspConst = new byte[] { 1, 1, 1 };
         public static SubscribeMessage Instance
         {
             get { return obj.Value; }
@@ -65,14 +68,94 @@ namespace ObserverNet
             }
         }
 
-        private void Tcp_CallSrv(System.Buffers.ArrayPool<byte> pool, byte[] data)
+        private void Tcp_CallSrv(System.Buffers.ArrayPool<byte> pool, byte[] data,SocketRsp rsp)
         {
-           
+            byte[] tmp = new byte[data.Length];
+            Array.Copy(data, 0, tmp, 0, tmp.Length);
+            pool.Return(data);
+            Process(tmp,rsp);
         }
 
-        private void UDP_UDPCall(System.Buffers.ArrayPool<byte> pool, byte[] data)
+        private void UDP_UDPCall(System.Buffers.ArrayPool<byte> pool, byte[] data,SocketRsp rsp)
         {
-           
+            byte[] tmp = new byte[data.Length];
+            Array.Copy(data, 0, tmp, 0, tmp.Length);
+            pool.Return(data);
+            Process(tmp,rsp);
+        }
+
+        private void Process(byte[]data, SocketRsp rsp)
+        {
+            switch(data[0])
+            {
+                case 2:
+                    CopyAddress(data,rsp);
+                    break;
+                case 3:
+                    RspSubscribe(data, rsp);
+                    break;
+                case 8:
+                    RspDetect(data, rsp);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 返回订阅地址
+        /// </summary>
+        /// <param name="data"></param>
+        private void CopyAddress(byte[] data, SocketRsp rsp)
+        {
+            string topic = Encoding.Default.GetString(data);
+            var addrs = SubscribeList.Subscribe.GetAddresses(topic);
+            var bytes = DataPack.PackCopyRspTopic(addrs);
+            if(rsp.Rsp!=null)
+            {
+                rsp.Rsp.Send(bytes);
+            }
+            else
+            {
+                uDP.Send(rsp.Address, rsp.Port, bytes);
+            }
+        }
+
+        /// <summary>
+        /// 回复订阅信息
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="rsp"></param>
+        private void RspSubscribe(byte[] data, SocketRsp rsp)
+        {
+            if (rsp.Rsp != null)
+            {
+                rsp.Rsp.Send(rspConst);
+            }
+            else
+            {
+                uDP.Send(rsp.Address, rsp.Port, rspConst);
+            }
+            //接收订阅
+            var msg = DataPack.UnPackSubscribeMsg(data);
+            AddressInfo address = new AddressInfo();
+            address.Reset(msg.Address);
+            SubscribeList.Subscribe.AddAddress(msg.TopicName, new AddressInfo[] { address });
+        }
+
+        /// <summary>
+        /// 回复侦测
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="rsp"></param>
+        private void RspDetect(byte[] data, SocketRsp rsp)
+        {
+            if (rsp.Rsp != null)
+            {
+                rsp.Rsp.Send(rspConst);
+            }
+            else
+            {
+                uDP.Send(rsp.Address, rsp.Port, rspConst);
+            }
         }
     }
 }

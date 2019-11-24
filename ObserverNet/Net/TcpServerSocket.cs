@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 
 namespace ObserverNet
 {
-    public delegate void CallRsp(ArrayPool<byte> pool,byte[] data);
+    public delegate void CallRsp(ArrayPool<byte> pool,byte[] data,SocketRsp rsp);
     public  class TcpServerSocket
     {
         readonly ArrayPool<byte> poolData = ArrayPool<byte>.Create(1024 * 1024, 100);
@@ -102,7 +102,7 @@ namespace ObserverNet
                 {
                     byte[] buf = poolData.Rent(BitConverter.ToInt32(bufLen, 0));
                     socketSend.Receive(buf);
-                    CallSrv(poolData, buf);
+                    CallSrv(poolData, buf,new SocketRsp() { Rsp = socketSend });
                  
                 }
                 poolLen.Return(bufLen);

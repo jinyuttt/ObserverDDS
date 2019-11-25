@@ -44,7 +44,8 @@ namespace ObserverNet
 
         public void Bind(int port=cport, string host = null)
         {
-            mcastOption = new  MulticastOption(mcastAddr, IPAddress.Any);
+            mcastOption = new  MulticastOption(mcastAddr);
+            mcastSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             if (string.IsNullOrEmpty(host))
             {
                 mcastSocket.Bind(new IPEndPoint(IPAddress.Any, port));
@@ -53,16 +54,24 @@ namespace ObserverNet
             {
                 mcastSocket.Bind(new IPEndPoint(IPAddress.Parse(host), port));
             }
+            //
             mcastSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 50);
-            mcastSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.ReuseAddress, true);
+           
             mcastSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, mcastOption);//发送方不必须，接收方必须
 
 
         }
 
+
+        /// <summary>
+        /// 发送数据
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="port"></param>
+        /// <returns></returns>
         public  int SendTo(byte[]data,int port=cport)
         {
-            IPEndPoint ipep = new IPEndPoint(mcastAddr, port);
+             IPEndPoint ipep = new IPEndPoint(mcastAddr, port);
              return  mcastSocket.SendTo(data, ipep);
         }
 

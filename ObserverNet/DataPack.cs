@@ -54,8 +54,10 @@ namespace ObserverNet
             Array.Copy(topics, 0, bytes, 8, topics.Length);//主题
             Array.Copy(BitConverter.GetBytes(nodeId), 0, bytes, 8+ topics.Length,8);//id
             Array.Copy(addr, 0, bytes, topics.Length+16, addr.Length);//地址
-
-            return bytes;
+            byte[] tmp = new byte[bytes.Length + 1];
+            tmp[0] = 1;
+            Array.Copy(bytes, 0, tmp, 1, bytes.Length);
+            return tmp;
         }
 
 
@@ -67,7 +69,9 @@ namespace ObserverNet
         public static TopicMessage UnPackNewTopic(byte[]data)
         {
             TopicMessage message = new TopicMessage();
-            Span<byte> bytes = data;
+            byte[] tmp = new byte[data.Length - 1];
+            Array.Copy(data, 1, tmp,0, data.Length - 1);
+            Span<byte> bytes = tmp;
             var lenSP=  bytes.Slice(0, 4);
             int len = BitConverter.ToInt32(lenSP.ToArray(), 0);
             lenSP = bytes.Slice(4, 4);
@@ -94,8 +98,9 @@ namespace ObserverNet
         public static byte[] PackCopyTopic(string topic)
         {
             byte[] topics = Encoding.Default.GetBytes(topic);
-           
-
+            byte[] tmp = new byte[topics.Length +1];
+            Array.Copy(topics, 0, tmp, 1, topics.Length );
+            tmp[0] = 2;
             return topics;
         }
 
@@ -114,6 +119,7 @@ namespace ObserverNet
                 lst.AddRange(BitConverter.GetBytes(tmp.Length));
                 lst.AddRange(tmp);
             }
+            lst.Insert(0, 5);
             return lst.ToArray();
         }
 
@@ -124,7 +130,9 @@ namespace ObserverNet
         /// <returns></returns>
         public static List<AddressInfo> UnPackCopyTopic(byte[]data)
         {
-            Span<byte> span = data;
+            byte[] tmpSum = new byte[data.Length - 1];
+            Array.Copy(data, 1, tmpSum, 0, data.Length - 1);
+            Span<byte> span = tmpSum;
             int index = 0;
             List<AddressInfo> lst = new List<AddressInfo>();
            var sp= span.Slice(0,4);
@@ -174,6 +182,7 @@ namespace ObserverNet
             lst.AddRange(BitConverter.GetBytes(bytes.Length));//主题长度
             lst.AddRange(bytes);
             lst.AddRange(address);
+            lst.Insert(0, 3);
             return lst.ToArray();
         }
 
@@ -185,7 +194,9 @@ namespace ObserverNet
         /// <returns></returns>
         public static TopicMessage UnPackSubscribeMsg(byte[]data)
         {
-            Span<byte> span = data;
+            byte[] tmp = new byte[data.Length - 1];
+            Array.Copy(data, 1, tmp, 0, data.Length - 1);
+            Span<byte> span = tmp;
             var sp= span.Slice(0, 4);
             int len = BitConverter.ToInt32(sp.ToArray(), 0);
             sp = span.Slice(4, 4);
@@ -205,10 +216,13 @@ namespace ObserverNet
         /// <param name="nodeid"></param>
         /// <param name="address"></param>
         /// <returns></returns>
-        public static byte[] PackNodeState(int nodeid,string address)
+        public static byte[] PackNodeState(long nodeid, string address)
         {
-            string msg = nodeid + address;
-            return Encoding.Default.GetBytes(msg);
+            string msg = string.Format("{0},{1}", nodeid, address);
+            List<byte> lst = new List<byte>();
+            lst.Add(6);
+            lst.AddRange(Encoding.Default.GetBytes(msg));
+            return lst.ToArray();
         }
 
 
@@ -219,8 +233,9 @@ namespace ObserverNet
         /// <returns></returns>
         public static string UnPackNodeState(byte[] data)
         {
-
-            return Encoding.Default.GetString(data);
+            byte[] tmp = new byte[data.Length - 1];
+            Array.Copy(data, 1, tmp, 0, data.Length - 1);
+            return Encoding.Default.GetString(tmp);
         }
 
        /// <summary>
@@ -228,13 +243,18 @@ namespace ObserverNet
        /// </summary>
        /// <param name="data"></param>
        /// <returns></returns>
-        public static Dictionary<string,List<AddressInfo>>  UnPackUpdatePublicList(byte[]data)
+        public static Dictionary<string,List<AddressInfo>>  UnPackUpdatePublicList(byte[]data,out long nodeid)
         {
             byte[] len = new byte[2];
             byte[] tmp = new byte[1024];
             Dictionary<string, List<AddressInfo>> dic = new Dictionary<string, List<AddressInfo>>();
             MemoryStream memory = new MemoryStream(data);
+            memory.ReadByte();
+
             List<AddressInfo> lst = null;
+            byte[] bufID = new byte[8];
+            memory.Read(bufID, 0, 8);
+            nodeid = BitConverter.ToInt64(bufID,0);
             while (memory.Position < memory.Length)
             {
                 lst = new List<AddressInfo>();
@@ -270,9 +290,11 @@ namespace ObserverNet
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static byte[] PackUpdatePublicList(Dictionary<string,List<AddressInfo>> pairs)
+        public static byte[] PackUpdatePublicList(long nodeid,Dictionary<string,List<AddressInfo>> pairs)
         {
             List<byte> lst = new List<byte>();
+            lst.Add(7);
+            lst.AddRange(BitConverter.GetBytes(nodeid));
             StringBuilder builder = new StringBuilder();
             foreach(var kv in pairs)
             {
@@ -293,5 +315,72 @@ namespace ObserverNet
             return lst.ToArray();
         }
 
+        /// <summary>
+        /// 注册
+        /// </summary>
+        /// <param name="nodeid"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        public static byte[] PackReg(long nodeid,AddressInfo info)
+        {
+            string msg = string.Format("{0},{1}", nodeid, info);
+            List<byte> lst = new List<byte>();
+            lst.Add(9);
+            lst.AddRange( Encoding.Default.GetBytes(msg));
+            return lst.ToArray();
+        }
+        
+        /// <summary>
+        /// 解析注册
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static  string UnPackReg(byte[]data)
+        {
+            byte[] tmp = new byte[data.Length - 1];
+            Array.Copy(data, 1, tmp, 0, data.Length - 1);
+            return Encoding.Default.GetString(tmp);
+        }
+
+        /// <summary>
+        /// 打包数据
+        /// </summary>
+        /// <param name="topic"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static byte[] PackTopicData(string topic,byte[]data)
+        {
+            List<byte> lst = new List<byte>(data.Length + 20);
+            byte[] tp = Encoding.Default.GetBytes(topic);
+            lst.Add(0);
+            lst.AddRange(BitConverter.GetBytes((short)(tp.Length)));
+            lst.AddRange(tp);
+            lst.AddRange(data);
+            return lst.ToArray();
+        }
+
+        /// <summary>
+        /// 解析数据
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static TopicData UnPackTopicData(byte[]data)
+        {
+            TopicData topic = new TopicData();
+            MemoryStream memory = new MemoryStream(data);
+            memory.ReadByte();
+            byte[] len = new byte[2];
+            memory.Read(len, 0, 2);
+            short tlen = BitConverter.ToInt16(len, 0);
+            byte[] topicbytes = new byte[tlen];
+            memory.Read(topicbytes, 0, tlen);
+            string str = Encoding.Default.GetString(topicbytes);
+            byte[] tmp = new byte[data.Length - 2 - tlen];
+            memory.Read(tmp, 0, tmp.Length);
+            topic.TopicName = str;
+            topic.Data = tmp;
+            return topic;
+
+        }
     }
 }

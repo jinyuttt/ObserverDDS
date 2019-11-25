@@ -112,5 +112,20 @@ namespace ObserverNet
                
             }
         }
+
+        /// <summary>
+        /// 复制数据
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string,List<AddressInfo>> CopyAddress()
+        {
+            Dictionary<string, List<AddressInfo>> dic = new Dictionary<string, List<AddressInfo>>();
+            var lst = dicList.ToArray();
+            foreach(var p in lst)
+            {
+                dic[p.Key] = p.Value;
+            }
+            return dic;
+        }
     }
 }

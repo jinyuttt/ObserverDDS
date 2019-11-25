@@ -36,7 +36,12 @@ namespace ObserverNet
         /// <summary>
         /// 所有节点信息
         /// </summary>
-        public static ConcurrentBag<string> LstNodeInfo = new ConcurrentBag<string>();
+        public static List<string> LstNodeInfo = new List<string>();
+
+        /// <summary>
+        /// 节点ID
+        /// </summary>
+        public static List<long> UpdateListId = new List<long>();
 
         /// <summary>
         /// 本节点等待订阅的主题
@@ -47,6 +52,11 @@ namespace ObserverNet
         /// 所有节点心跳信息
         /// </summary>
         public static ConcurrentDictionary<string, int> dicRefresh = new ConcurrentDictionary<string, int>();
+
+        /// <summary>
+        /// 当前更新节点
+        /// </summary>
+        public static long UpdateListCurrentID = -1;
 
     }
 }

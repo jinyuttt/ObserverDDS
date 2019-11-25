@@ -1,0 +1,13 @@
+E:\Study\ObserverNet\sub\bin\Debug\sub.exe.config
+E:\Study\ObserverNet\sub\bin\Debug\sub.exe
+E:\Study\ObserverNet\sub\bin\Debug\sub.pdb
+E:\Study\ObserverNet\sub\bin\Debug\ObserverNet.dll
+E:\Study\ObserverNet\sub\bin\Debug\System.Memory.dll
+E:\Study\ObserverNet\sub\bin\Debug\System.Buffers.dll
+E:\Study\ObserverNet\sub\bin\Debug\System.Numerics.Vectors.dll
+E:\Study\ObserverNet\sub\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+E:\Study\ObserverNet\sub\bin\Debug\ObserverNet.pdb
+E:\Study\ObserverNet\sub\obj\Debug\sub.csprojAssemblyReference.cache
+E:\Study\ObserverNet\sub\obj\Debug\sub.csproj.CopyComplete
+E:\Study\ObserverNet\sub\obj\Debug\sub.exe
+E:\Study\ObserverNet\sub\obj\Debug\sub.pdb

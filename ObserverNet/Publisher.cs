@@ -46,6 +46,10 @@ namespace ObserverNet
        /// <param name="data"></param>
         public void Publish(string topic,byte[]data)
         {
+            if(ObserverInit.isInit)
+            {
+                ObserverInit.Init();
+            }
            var array= SubscribeList.Subscribe.GetAddresses(topic);
             if(array==null)
             {

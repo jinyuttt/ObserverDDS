@@ -35,11 +35,14 @@ namespace ObserverNet
         private object lock_obj = new object();//
         private bool isInit = false;//是否初始化
         private readonly byte[] rspConst = new byte[] { 1, 1, 1 };
+
         public static SubscribeMessage Instance
         {
             get { return obj.Value; }
         }
+        public string TcpAddress { get; set; }
 
+        public string UdpAddress { get; set; }
         /// <summary>
         /// 初始化
         /// </summary>
@@ -64,7 +67,10 @@ namespace ObserverNet
                 });
                 tcp.Bind();
                 tcp.CallSrv += Tcp_CallSrv;
-             
+
+                TcpAddress = tcp.LocalPoint.Address + "_" + tcp.LocalPoint.Port;
+                UdpAddress = uDP.LocalPoint.Address + "_" + uDP.LocalPoint.Port;
+
             }
         }
 
@@ -96,6 +102,9 @@ namespace ObserverNet
                     break;
                 case 8:
                     RspDetect(data, rsp);
+                    break;
+                case 0:
+                    ProcessTopic(data);
                     break;
             }
         }
@@ -156,6 +165,13 @@ namespace ObserverNet
             {
                 uDP.Send(rsp.Address, rsp.Port, rspConst);
             }
+        }
+
+
+        private void ProcessTopic(byte[]data)
+        {
+           var p= DataPack.UnPackTopicData(data);
+
         }
     }
 }

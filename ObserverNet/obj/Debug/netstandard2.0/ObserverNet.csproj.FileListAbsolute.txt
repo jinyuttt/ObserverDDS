@@ -1,8 +1,7 @@
 E:\Study\ObserverNet\ObserverNet\bin\Debug\netstandard2.0\ObserverNet.deps.json
 E:\Study\ObserverNet\ObserverNet\bin\Debug\netstandard2.0\ObserverNet.dll
-E:\Study\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.csprojAssemblyReference.cache
+E:\Study\ObserverNet\ObserverNet\bin\Debug\netstandard2.0\ObserverNet.pdb
 E:\Study\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.AssemblyInfoInputs.cache
 E:\Study\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.AssemblyInfo.cs
-E:\Study\ObserverNet\ObserverNet\bin\Debug\netstandard2.0\ObserverNet.pdb
 E:\Study\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.dll
 E:\Study\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.pdb

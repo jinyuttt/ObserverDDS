@@ -81,7 +81,10 @@ namespace ObserverNet
             pool.Return(data);
         }
 
-        private void StartRecvice()
+        /// <summary>
+        /// 启动监听
+        /// </summary>
+        public void StartRecvice()
         {
             
             multicast.Bind();
@@ -103,6 +106,9 @@ namespace ObserverNet
                     break;
                 case 7:
                     ProcessPubLisUpdate(data);
+                    break;
+                case 9:
+                    ProcessReg(data);
                     break;
             }
         }
@@ -139,12 +145,29 @@ namespace ObserverNet
         /// <param name="data"></param>
         private void ProcessPubLisUpdate(byte[] data)
         {
-            var dic = DataPack.UnPackUpdatePublicList(data);
+            long curID = 0;
+            var dic = DataPack.UnPackUpdatePublicList(data,out curID);
+            NodeList.UpdateListCurrentID = curID;
             //添加本地
             foreach(var kv in dic)
             {
                 PublishList.Publish.AddNode(kv.Key, kv.Value.ToArray());
             }
+        }
+
+        /// <summary>
+        /// 解析注册
+        /// </summary>
+        /// <param name="data"></param>
+        private void  ProcessReg(byte[] data)
+        {
+            var msg = DataPack.UnPackReg(data);
+            NodeList.dicRefresh[msg] = DateTime.Now.Second;
+            NodeList.LstNodeInfo.Add(msg);
+            int index = msg.IndexOf(",");
+            string id = msg.Substring(0, index);
+            NodeList.UpdateListId.Add(long.Parse(id));
+
         }
     }
 }

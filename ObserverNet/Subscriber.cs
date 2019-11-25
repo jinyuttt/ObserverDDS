@@ -33,11 +33,19 @@ namespace ObserverNet
     /// </summary>
     public class Subscriber
     {
+        public CallBackTopic Call;
         public void Subscribe(string topic)
         {
+            if (ObserverInit.isInit)
+            {
+                ObserverInit.Init();
+            }
             SubscribeMgr.Instance.Add(this, topic);
         }
 
-
+        public void UnSubscribe(string topic)
+        {
+            SubscribeMgr.Instance.Remove(this, topic);
+        }
     }
 }

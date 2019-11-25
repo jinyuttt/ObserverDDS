@@ -37,6 +37,11 @@ namespace ObserverNet
 
         public event CallRsp CallSrv;
 
+
+        public IPEndPoint LocalPoint
+        {
+            get;set;
+        }
         /// <summary>
         /// 绑定
         /// </summary>
@@ -48,10 +53,11 @@ namespace ObserverNet
             {
                 Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 socket.Bind(new IPEndPoint(IPAddress.Any, port));
+                socket.Listen(100);
                 Thread threadReceive = new Thread(new ParameterizedThreadStart(StartListen));
                 threadReceive.IsBackground = true;
                 threadReceive.Start(socket);
-               
+                LocalPoint =(IPEndPoint) socket.LocalEndPoint;
                 return true;
             }
             catch

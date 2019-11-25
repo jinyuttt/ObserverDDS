@@ -30,11 +30,15 @@ namespace ObserverNet
     public delegate void UDPCallBuffer(ArrayPool<byte> pool, byte[] data,SocketRsp rsp);
     public class UDPSocket
     {
-        readonly ArrayPool<byte> poolData = ArrayPool<byte>.Create(1024 * 1024, 100);
+         ArrayPool<byte> poolData = null;
         readonly ArrayPool<byte> poolLen = ArrayPool<byte>.Create(4, 1000);
         Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         public event UDPCallBuffer UDPCall;
 
+        public IPEndPoint LocalPoint
+        {
+            get { return (IPEndPoint)socket.LocalEndPoint; }
+        }
         /// <summary>
         /// 发送数据
         /// </summary>
@@ -79,7 +83,7 @@ namespace ObserverNet
         /// </summary>
         public void StartRecvice()
         {
-           
+            poolData = ArrayPool<byte>.Create(1024 * 1024, 100);
             EndPoint point = new IPEndPoint(IPAddress.Any,0);
             while (true)
             {
@@ -105,6 +109,12 @@ namespace ObserverNet
             return socket.ReceiveFrom(buf, ref point);
 
 
+        }
+
+        public void Close()
+        {
+            
+            socket.Close();
         }
     }
 }

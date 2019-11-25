@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Collections.Concurrent;
 
 namespace ObserverNet
@@ -32,14 +31,14 @@ namespace ObserverNet
     /// 主题订阅列表（订阅方的列表）
     /// 保持订阅本节点数据的地址
     /// </summary>
-  public  class SubscribeList
+    public  class SubscribeList
     {
         private static readonly Lazy<SubscribeList> instance = new Lazy<SubscribeList>();
 
         /// <summary>
         /// 收到的订阅信息
         /// </summary>
-        private readonly ConcurrentDictionary<string, ConcurrentBag<AddressInfo>> dicList = new ConcurrentDictionary<string, ConcurrentBag<AddressInfo>>();
+        private readonly ConcurrentDictionary<string, List<AddressInfo>> dicList = new ConcurrentDictionary<string, List<AddressInfo>>();
         public static SubscribeList Subscribe
         {
             get { return instance.Value; }
@@ -52,7 +51,7 @@ namespace ObserverNet
         /// <returns></returns>
         public AddressInfo[] GetAddresses(string topic)
         {
-            ConcurrentBag<AddressInfo> bag = null;
+            List<AddressInfo> bag = null;
             if (dicList.TryGetValue(topic,out bag))
             {
               return  bag.ToArray();
@@ -72,25 +71,58 @@ namespace ObserverNet
                 return;
             }
             //
-            ConcurrentBag<AddressInfo> bag = null;
+            List<AddressInfo> bag = null;
             if (dicList.TryGetValue(topic, out bag))
             {
-                foreach(var addr in info)
+                lock (bag)
                 {
-                    bag.Add(addr);
+                    foreach (var addr in info)
+                    {
+                        if (!bag.Contains(addr))
+                        {
+                            bag.Add(addr);
+                        }
+                    }
                 }
                  
             }
             else
             {
-                bag = new ConcurrentBag<AddressInfo>();
+                bag = new List<AddressInfo>();
                 dicList[topic] = bag;
-                foreach (var addr in info)
+                lock (bag)
                 {
-                    bag.Add(addr);
+                    foreach (var addr in info)
+                    {
+                        if (!bag.Contains(addr))
+                        {
+                            bag.Add(addr);
+                        }
+                    }
                 }
             }
 
+        }
+
+       /// <summary>
+       /// 移除订阅地址
+       /// </summary>
+       /// <param name="info"></param>
+        public void Remove(AddressInfo info)
+        {
+            foreach(var kv in dicList)
+            {
+                lock(kv.Value)
+                {
+                   for(int i=0;i<kv.Value.Count;i++)
+                    {
+                        if(info.Equals(kv.Value[i]))
+                        {
+                            kv.Value.RemoveAt(i);
+                        }
+                    }
+                }
+            }
         }
     }
 }

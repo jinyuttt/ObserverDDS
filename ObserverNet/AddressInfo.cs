@@ -60,5 +60,18 @@ namespace ObserverNet
             Protol = int.Parse(tmp[0]);
         }
 
+        public override bool Equals(object obj)
+        {
+            AddressInfo tmp = obj as AddressInfo;
+            if(tmp==null)
+            {
+                return false;
+            }
+            else if(this.ToString()==obj.ToString())
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

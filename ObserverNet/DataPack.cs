@@ -109,19 +109,20 @@ namespace ObserverNet
         /// <returns></returns>
         public static byte[] PackCopyRspTopic(AddressInfo[] addresses)
         {
-            if(addresses==null)
-            {
-                return null;
-            }
+           
             List<byte> lst = new List<byte>();
-            lst.AddRange(BitConverter.GetBytes(addresses.Length));
-            foreach(var p in addresses)
+            lst.Add(5);
+            if (addresses != null)
             {
-                byte[] tmp = Encoding.Default.GetBytes(p.ToString());
-                lst.AddRange(BitConverter.GetBytes(tmp.Length));
-                lst.AddRange(tmp);
+                lst.AddRange(BitConverter.GetBytes(addresses.Length));
+                foreach (var p in addresses)
+                {
+                    byte[] tmp = Encoding.Default.GetBytes(p.ToString());
+                    lst.AddRange(BitConverter.GetBytes(tmp.Length));
+                    lst.AddRange(tmp);
+                }
             }
-            lst.Insert(0, 5);
+          
             return lst.ToArray();
         }
 
@@ -130,31 +131,34 @@ namespace ObserverNet
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static List<AddressInfo> UnPackCopyTopic(byte[]data)
+        public static List<AddressInfo> UnPackCopyRspTopic(byte[]data)
         {
             byte[] tmpSum = new byte[data.Length - 1];
             Array.Copy(data, 1, tmpSum, 0, data.Length - 1);
             Span<byte> span = tmpSum;
             int index = 0;
             List<AddressInfo> lst = new List<AddressInfo>();
-           var sp= span.Slice(0,4);
-            int num = BitConverter.ToInt32(sp.ToArray(), 0);
-            index += 4;
-            for (int i = 0; i < num; i++)
+            if (tmpSum.Length > 0)
             {
-
-                sp = span.Slice(index, 4);
-                int len = BitConverter.ToInt32(sp.ToArray(), 0);
-                sp = span.Slice(index, len);
-                string tmp = Encoding.Default.GetString(sp.ToArray());
-                AddressInfo address = new AddressInfo();
-                string[] info = tmp.Split('_');
-                address.Address = info[1];
-                address.Port = int.Parse(info[2]);
-                address.Protol = int.Parse(info[0]);
-                lst.Add(address);
+                var sp = span.Slice(0, 4);
+                int num = BitConverter.ToInt32(sp.ToArray(), 0);
                 index += 4;
-                index += len;
+                for (int i = 0; i < num; i++)
+                {
+
+                    sp = span.Slice(index, 4);
+                    int len = BitConverter.ToInt32(sp.ToArray(), 0);
+                    sp = span.Slice(index, len);
+                    string tmp = Encoding.Default.GetString(sp.ToArray());
+                    AddressInfo address = new AddressInfo();
+                    string[] info = tmp.Split('_');
+                    address.Address = info[1];
+                    address.Port = int.Parse(info[2]);
+                    address.Protol = int.Parse(info[0]);
+                    lst.Add(address);
+                    index += 4;
+                    index += len;
+                }
             }
             return lst;
 
@@ -266,7 +270,7 @@ namespace ObserverNet
                 short topicLen = BitConverter.ToInt16(len, 0);
                 memory.Read(tmp, 0, topicLen);
                 string topic = Encoding.Default.GetString(tmp, 0, topicLen);
-                short addrLen = (short)(infoLen - topicLen - 4);
+                short addrLen = (short)(infoLen - topicLen - 2);
                 if (addrLen > 1024)
                 {
                     tmp = new byte[addrLen];
@@ -411,6 +415,7 @@ namespace ObserverNet
             message.TopicName = topic;
             return message;
         }
+       
         /// <summary>
         /// 新增主题
         /// </summary>

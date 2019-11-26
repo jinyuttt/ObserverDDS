@@ -102,13 +102,15 @@ namespace ObserverNet
             {
                 return;
             }
-          dicFilter[topic] = null;
-          var array=  PublishList.Publish.GetAddresses(topic);
-
+            dicFilter[topic] = null;
+            var array=  PublishList.Publish.GetAddresses(topic);
+            bool isSucess = false;
             //发送订阅信息
            if(array!=null)
             {
-                byte[] tmp = DataPack.PackSubscribeMsg(topic,new AddressInfo[] { LocalNode.InfoTcp, LocalNode.InfoUdp });
+                var local = new AddressInfo();
+                local.Reset(LocalNode.TopicAddress);
+                byte[] tmp = DataPack.PackSubscribeMsg(topic,new AddressInfo[] {local  });
                 foreach (var addr in array)
                 {
                     if(addr.Protol==0)
@@ -119,6 +121,7 @@ namespace ObserverNet
                         if(tcp.Connect())
                         {
                             tcp.Send(tmp);
+                            isSucess = true;
                         }
                         tcp.Close();
                     }
@@ -137,6 +140,7 @@ namespace ObserverNet
                               });
                             if(tsk.Wait(udpWait))
                             {
+                                isSucess = true;
                                 break;
                             }
                             num--;
@@ -155,6 +159,19 @@ namespace ObserverNet
                 NodeList.dicWaitSubscribe[topic] = null;
                 //
             }
+           if(!isSucess)
+            {
+                //订阅全部没有成功
+                NodeList.dicWaitSubscribe[topic] = null;
+                string t;
+                dicFilter.TryRemove(topic,out t);
+            }
+           else
+            {
+                string t;
+                //订阅有一个成功
+                NodeList.dicWaitSubscribe.TryRemove(topic, out t);
+            }
         }
 
         /// <summary>
@@ -170,6 +187,10 @@ namespace ObserverNet
             }
         }
     
+        /// <summary>
+        /// 返回数据
+        /// </summary>
+        /// <param name="data"></param>
         public void AddData(TopicData data)
         {
             queue.Enqueue(data);

@@ -39,8 +39,7 @@ namespace ObserverNet
 
         private ConcurrentDictionary<string, List<string>> dicRec = new ConcurrentDictionary<string, List<string>>();
         private ConcurrentDictionary<string,string> dicComplete = new ConcurrentDictionary<string,string>();
-
-        MulticastSocket multicast = new MulticastSocket();
+        readonly MulticastSocket multicast = new MulticastSocket();
 
         
         public static NodeListener Instance
@@ -70,6 +69,7 @@ namespace ObserverNet
             return false;
 
         }
+
         public NodeListener()
         {
             multicast.MulticastCall += Multicast_MulticastCall;
@@ -155,10 +155,27 @@ namespace ObserverNet
             var dic = DataPack.UnPackUpdatePublicList(data,len,out curID);
             NodeList.UpdateListCurrentID = curID;
             //添加本地
+            List<string> lstNew = new List<string>();
             foreach(var kv in dic)
             {
-                PublishList.Publish.AddNode(kv.Key, kv.Value.ToArray());
+               bool isAdd= PublishList.Publish.AddNode(kv.Key, kv.Value.ToArray());
+                if (isAdd)
+                {
+                    lstNew.Add(kv.Key);
+                }
             }
+            foreach(var topic in lstNew)
+            {
+                //如果有发布地址新增主题，查看是否正在等待订阅
+                if (NodeList.dicWaitSubscribe.ContainsKey(topic))
+                {
+                    //再次订阅
+                    SubscribeMgr.Instance.NewTopicRec(topic);
+                }
+            }
+           
+            
+
         }
 
         /// <summary>
@@ -173,7 +190,8 @@ namespace ObserverNet
             int index = msg.IndexOf(",");
             string id = msg.Substring(0, index);
             NodeList.UpdateListId.Add(long.Parse(id));
-
+            //如果有节点注册，则立即触发一次发布列表刷新
+            NodeTimer.Instance.UpdateList();
         }
 
         private void ProcessNewTopicRsp(byte[] data, int len)

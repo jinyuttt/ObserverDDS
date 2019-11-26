@@ -26,6 +26,10 @@ using System.Threading.Tasks;
 
 namespace ObserverNet
 {
+
+    /// <summary>
+    /// 节点定时任务
+    /// </summary>
     public class NodeTimer
     {
         private static readonly Lazy<NodeTimer> obj = new Lazy<NodeTimer>();
@@ -38,7 +42,9 @@ namespace ObserverNet
 
         private const int WaitTectNum = 100;
 
-     
+        private int CountUpdateNum = 0;
+
+        private long CurrentId = -1;
 
         public static NodeTimer Instance
         {
@@ -46,7 +52,7 @@ namespace ObserverNet
         }
 
         /// <summary>
-        /// 启动
+        /// 启动定时处理节点
         /// </summary>
         public void Start()
         {
@@ -166,7 +172,7 @@ namespace ObserverNet
         /// <summary>
         /// 更新列表
         /// </summary>
-        private void UpdateList()
+        public void UpdateList()
         {
             if (NodeList.UpdateListId.Count==0)
             {
@@ -176,15 +182,43 @@ namespace ObserverNet
             {
                 NodeList.UpdateListId.Sort();
                 int index = NodeList.UpdateListId.IndexOf(NodeList.UpdateListCurrentID);
-                if (NodeList.UpdateListId[index + 1] == LocalNode.NodeId)
+                index = (index + 1) % NodeList.UpdateListId.Count;
+                
+                if (NodeList.UpdateListId[index] == LocalNode.NodeId)
                 {
                     //发送列表更新
-                    DataPack.PackUpdatePublicList(LocalNode.NodeId, PublishList.Publish.CopyAddress());
+                    var bytes=  DataPack.PackUpdatePublicList(LocalNode.NodeId, PublishList.Publish.CopyAddress());
+                    Multicast.SendTo(bytes);
+                    CountUpdateNum = 0;
+                }
+                else
+                {
+                    if(CurrentId== NodeList.UpdateListId[index])
+                    {
+                        //异常，上次也是该节点，计数
+                        CountUpdateNum++;
+
+                    }
+                    //
+                    CurrentId = NodeList.UpdateListId[index];
+                    //判断跳过异常是否是自己
+                    index = (index + CountUpdateNum) % NodeList.UpdateListId.Count;
+                    if (NodeList.UpdateListId[index] == LocalNode.NodeId)
+                    {
+                        //发送列表更新
+                        var bytes = DataPack.PackUpdatePublicList(LocalNode.NodeId, PublishList.Publish.CopyAddress());
+                        Multicast.SendTo(bytes);
+                        CountUpdateNum = 0;
+                    }
+                   
                 }
             });
           
         }
     
+        /// <summary>
+        /// 注册节点
+        /// </summary>
         public void SendReg()
         {
             AddressInfo info = new AddressInfo();

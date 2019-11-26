@@ -42,12 +42,16 @@ namespace ObserverNet
                 NodeListener.Instance.StartRecvice();
                 SubscribeMessage.Instance.Init();
                 NodeTimer.Instance.Start();
+               
                 Random random = new Random(DateTime.Now.Millisecond);
                 LocalNode.NodeId = random.Next();
                 LocalNode.InfoTcp = new AddressInfo();
                 LocalNode.InfoTcp.Reset("0_" + SubscribeMessage.Instance.TcpAddress);
                 LocalNode.InfoUdp = new AddressInfo();
-                LocalNode.InfoUdp.Reset("0_" + SubscribeMessage.Instance.UdpAddress);
+                LocalNode.InfoUdp.Reset("1_" + SubscribeMessage.Instance.UdpAddress);
+                LocalNode.TopicAddress = LocalNode.InfoUdp.ToString();
+                NodeTimer.Instance.SendReg();
+                Console.WriteLine(LocalNode.NodeId + ";" + LocalNode.InfoUdp + ";" + LocalNode.InfoTcp);
                 isInit = false;
             }
          

@@ -13,7 +13,7 @@ namespace sub
             ObserverNet.NetSubscriber netSubscriber = new ObserverNet.NetSubscriber();
             netSubscriber.Subscribe("test");
             netSubscriber.CallBack += NetSubscriber_CallBack;
-           
+            Console.Read();
         }
 
         private static void NetSubscriber_CallBack(string topic, byte[] data)

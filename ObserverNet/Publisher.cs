@@ -75,7 +75,7 @@ namespace ObserverNet
                     List<AddressInfo> lst = null;
                     foreach (var p in array)
                     {
-                        var bytes=  Encoding.Default.GetBytes(topic);
+                        var bytes = DataPack.PackCopyTopic(topic);
                         byte[] buf = new byte[10240];
                        
                         if (p.Protol == 0)

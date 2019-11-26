@@ -27,7 +27,7 @@ using System.Net.Sockets;
 
 namespace ObserverNet
 {
-    public delegate void UDPCallBuffer(ArrayPool<byte> pool, byte[] data,SocketRsp rsp);
+    public delegate void UDPCallBuffer(ArrayPool<byte> pool, byte[] data,int len,SocketRsp rsp);
     public class UDPSocket
     {
          ArrayPool<byte> poolData = null;
@@ -62,6 +62,7 @@ namespace ObserverNet
         {
             try
             {
+                host = NetAddress.GetLocalIP();
                 if (string.IsNullOrEmpty(host))
                 {
                     socket.Bind(new IPEndPoint(IPAddress.Any, port));
@@ -89,12 +90,16 @@ namespace ObserverNet
             {
                 byte[] bufLen = poolLen.Rent(4);
                 int r = socket.ReceiveFrom(bufLen, ref point);
+                if(r==0)
+                {
+                    break;
+                }
                 if (r > 0)
                 {
                     byte[] buf = poolData.Rent(BitConverter.ToInt32(bufLen, 0));
-                    socket.ReceiveFrom(buf, ref point);
+                    r=socket.ReceiveFrom(buf, ref point);
                     IPEndPoint iP = (IPEndPoint)point;
-                    UDPCall(poolData, buf,new SocketRsp() { Address = iP.Address.ToString(), Port = iP.Port });
+                    UDPCall(poolData, buf,r,new SocketRsp() { Address = iP.Address.ToString(), Port = iP.Port });
                 }
                 poolLen.Return(bufLen);
             }

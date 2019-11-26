@@ -74,17 +74,17 @@ namespace ObserverNet
             }
         }
 
-        private void Tcp_CallSrv(System.Buffers.ArrayPool<byte> pool, byte[] data,SocketRsp rsp)
+        private void Tcp_CallSrv(System.Buffers.ArrayPool<byte> pool, byte[] data,int len,SocketRsp rsp)
         {
-            byte[] tmp = new byte[data.Length];
+            byte[] tmp = new byte[len];
             Array.Copy(data, 0, tmp, 0, tmp.Length);
             pool.Return(data);
             Process(tmp,rsp);
         }
 
-        private void UDP_UDPCall(System.Buffers.ArrayPool<byte> pool, byte[] data,SocketRsp rsp)
+        private void UDP_UDPCall(System.Buffers.ArrayPool<byte> pool, byte[] data,int len,SocketRsp rsp)
         {
-            byte[] tmp = new byte[data.Length];
+            byte[] tmp = new byte[len];
             Array.Copy(data, 0, tmp, 0, tmp.Length);
             pool.Return(data);
             Process(tmp,rsp);
@@ -115,9 +115,14 @@ namespace ObserverNet
         /// <param name="data"></param>
         private void CopyAddress(byte[] data, SocketRsp rsp)
         {
-            string topic = Encoding.Default.GetString(data);
+           
+            string topic = Encoding.Default.GetString(data,1,data.Length-1);
             var addrs = SubscribeList.Subscribe.GetAddresses(topic);
             var bytes = DataPack.PackCopyRspTopic(addrs);
+            if(bytes==null)
+            {
+                bytes = new byte[0];
+            }
             if(rsp.Rsp!=null)
             {
                 rsp.Rsp.Send(bytes);

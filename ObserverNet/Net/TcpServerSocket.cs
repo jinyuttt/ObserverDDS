@@ -26,14 +26,15 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace ObserverNet
 {
-    public delegate void CallRsp(ArrayPool<byte> pool,byte[] data,SocketRsp rsp);
+    public delegate void CallRsp(ArrayPool<byte> pool,byte[] data,int len,SocketRsp rsp);
     public  class TcpServerSocket
     {
         readonly ArrayPool<byte> poolData = ArrayPool<byte>.Create(1024 * 1024, 100);
-        readonly ArrayPool<byte> poolLen = ArrayPool<byte>.Create(4, 1000);
+        readonly ConcurrentQueue<byte[]> poolLen = new ConcurrentQueue<byte[]>();
 
         public event CallRsp CallSrv;
 
@@ -41,6 +42,13 @@ namespace ObserverNet
         public IPEndPoint LocalPoint
         {
             get;set;
+        }
+        private void Init()
+        {
+            for(int i=0;i<1000;i++)
+            {
+                poolLen.Enqueue(new byte[4]);
+            }
         }
         /// <summary>
         /// 绑定
@@ -51,8 +59,14 @@ namespace ObserverNet
         {
             try
             {
+                string host = NetAddress.GetLocalIP();
+                IPAddress address = IPAddress.Any;
+                if(!string.IsNullOrEmpty(host))
+                {
+                    address = IPAddress.Parse(host);
+                }
                 Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                socket.Bind(new IPEndPoint(IPAddress.Any, port));
+                socket.Bind(new IPEndPoint(address, port));
                 socket.Listen(100);
                 Thread threadReceive = new Thread(new ParameterizedThreadStart(StartListen));
                 threadReceive.IsBackground = true;
@@ -74,6 +88,7 @@ namespace ObserverNet
         private void StartListen(object obj)
         {
             Socket socketWatch = obj as Socket;
+            Init();
             while (true)
             {
 
@@ -93,25 +108,34 @@ namespace ObserverNet
         private void Receive(object obj)
         {
             Socket socketSend = obj as Socket;
+            int r = 0;
             while (true)
             {
                 //客户端连接成功后，服务器接收客户端发送的消息
                 //byte[] buffer = new byte[2048];
                 //实际接收到的有效字节数
-                byte[] bufLen = poolLen.Rent(4);
-                int count = socketSend.Receive(bufLen);
-                if (count == 0)//count 表示客户端关闭，要退出循环
+                int len = 0;
+                byte[] bufLen = null;
+                if (poolLen.TryDequeue(out bufLen))
                 {
-                    break;
+                    int count = socketSend.Receive(bufLen);
+                    if (count == 0)//count 表示客户端关闭，要退出循环
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        len = BitConverter.ToInt32(bufLen, 0);
+                         byte[] buf = poolData.Rent(len);
+                      
+                            r = socketSend.Receive(buf);
+
+                        
+                        CallSrv(poolData, buf, r, new SocketRsp() { Rsp = socketSend });
+
+                    }
+                    poolLen.Enqueue(bufLen);
                 }
-                else
-                {
-                    byte[] buf = poolData.Rent(BitConverter.ToInt32(bufLen, 0));
-                    socketSend.Receive(buf);
-                    CallSrv(poolData, buf,new SocketRsp() { Rsp = socketSend });
-                 
-                }
-                poolLen.Return(bufLen);
             }
         }
 

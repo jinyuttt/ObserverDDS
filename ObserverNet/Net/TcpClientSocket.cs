@@ -49,7 +49,10 @@ namespace ObserverNet
 
         public  int Send(byte[] data)
         {
-          return  socket.Send(data);
+            byte[] tmp = new byte[data.Length + 4];
+            Array.Copy(BitConverter.GetBytes(data.Length), tmp, 4);
+            Array.Copy(data,0, tmp, 4,data.Length);
+            return  socket.Send(tmp);
         }
 
         public int  Recvice(byte[] buf)

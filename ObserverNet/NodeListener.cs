@@ -75,9 +75,9 @@ namespace ObserverNet
             multicast.MulticastCall += Multicast_MulticastCall;
         }
 
-        private void Multicast_MulticastCall(ArrayPool<byte> pool, byte[] data)
+        private void Multicast_MulticastCall(ArrayPool<byte> pool, byte[] data,int len)
         {
-            Process(data);
+            Process(data,len);
             pool.Return(data);
         }
 
@@ -92,23 +92,27 @@ namespace ObserverNet
 
         }
         
-        private void Process(byte[]data)
+        private void Process(byte[]data,int len)
         {
             //解析数据处理
             switch(data[0])
             {
                 case 1:
-                    ProcessNewToic(data);
+                    ProcessNewToic(data, len);
 
                     break;
+
+                case 4:
+                    ProcessNewTopicRsp(data, len);
+                    break;
                 case 6:
-                    ProcessState(data);
+                    ProcessState(data,len);
                     break;
                 case 7:
-                    ProcessPubLisUpdate(data);
+                    ProcessPubLisUpdate(data,len);
                     break;
                 case 9:
-                    ProcessReg(data);
+                    ProcessReg(data,len);
                     break;
             }
         }
@@ -117,14 +121,16 @@ namespace ObserverNet
         /// 新增主题
         /// </summary>
         /// <param name="data"></param>
-        private void ProcessNewToic(byte[]data)
+        private void ProcessNewToic(byte[]data,int len)
         {
-            var msg = DataPack.UnPackNewTopic(data);
+            var msg = DataPack.UnPackNewTopic(data,len);
             //添加本地
             AddressInfo info = new AddressInfo();
             info.Reset(msg.Address);
             PublishList.Publish.AddNode(msg.TopicName,new AddressInfo[] { info });
             SubscribeMgr.Instance.NewTopicRec(msg.TopicName);
+
+            multicast.SendTo(DataPack.PackNewTopicRsp(msg.TopicName, LocalNode.NodeId, LocalNode.TopicAddress));
 
         }
 
@@ -132,9 +138,9 @@ namespace ObserverNet
         /// 心跳
         /// </summary>
         /// <param name="data"></param>
-        private void ProcessState(byte[]data)
+        private void ProcessState(byte[]data,int len)
         {
-            var msg = DataPack.UnPackNodeState(data);
+            var msg = DataPack.UnPackNodeState(data,len);
             //添加本地
             NodeList.dicRefresh[msg] = DateTime.Now.Second;
         }
@@ -143,10 +149,10 @@ namespace ObserverNet
         /// 更新发布列表
         /// </summary>
         /// <param name="data"></param>
-        private void ProcessPubLisUpdate(byte[] data)
+        private void ProcessPubLisUpdate(byte[] data,int len)
         {
             long curID = 0;
-            var dic = DataPack.UnPackUpdatePublicList(data,out curID);
+            var dic = DataPack.UnPackUpdatePublicList(data,len,out curID);
             NodeList.UpdateListCurrentID = curID;
             //添加本地
             foreach(var kv in dic)
@@ -159,15 +165,41 @@ namespace ObserverNet
         /// 解析注册
         /// </summary>
         /// <param name="data"></param>
-        private void  ProcessReg(byte[] data)
+        private void  ProcessReg(byte[] data,int len)
         {
-            var msg = DataPack.UnPackReg(data);
+            var msg = DataPack.UnPackReg(data,len);
             NodeList.dicRefresh[msg] = DateTime.Now.Second;
             NodeList.LstNodeInfo.Add(msg);
             int index = msg.IndexOf(",");
             string id = msg.Substring(0, index);
             NodeList.UpdateListId.Add(long.Parse(id));
 
+        }
+
+        private void ProcessNewTopicRsp(byte[] data, int len)
+        {
+            var msg = DataPack.UnPackNewTopicRsp(data, len);
+            if(msg.NodeId==LocalNode.NodeId)
+            {
+                return;
+            }
+            List<string> lst = null;
+            if (dicRec.TryGetValue(msg.TopicName, out lst))
+            {
+                lock (lst)
+                {
+                    if (!lst.Contains(msg.Address))
+                    {
+                        lst.Add(msg.Address);
+                    }
+                }
+            }
+            else
+            {
+                lst = new List<string>();
+                dicRec[msg.TopicName] = lst;
+                lst.Add(msg.Address);
+            }
         }
     }
 }

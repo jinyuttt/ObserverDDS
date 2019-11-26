@@ -24,17 +24,18 @@ using System;
 using System.Buffers;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace ObserverNet
 {
-    public delegate void MultCallBuffer(ArrayPool<byte> pool,byte[] data);
+    public delegate void MultCallBuffer(ArrayPool<byte> pool,byte[] data,int len);
    /// <summary>
    /// 组播
    /// </summary>
     public class MulticastSocket
     {
         readonly ArrayPool<byte> poolData = ArrayPool<byte>.Create(1024 * 1024, 100);
-        readonly ArrayPool<byte> poolLen = ArrayPool<byte>.Create(4, 1000);
+      //  readonly ArrayPool<byte> poolLen = ArrayPool<byte>.Create(4, 1000);
         Socket mcastSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         MulticastOption mcastOption;
         private const string mcastAddress="230.1.1.1";
@@ -48,7 +49,15 @@ namespace ObserverNet
             mcastSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             if (string.IsNullOrEmpty(host))
             {
-                mcastSocket.Bind(new IPEndPoint(IPAddress.Any, port));
+                //host = NetAddress.GetLocalIP();
+                //if (string.IsNullOrEmpty(host))
+                //{
+                    mcastSocket.Bind(new IPEndPoint(IPAddress.Any, port));
+                //}
+                //else
+                //{
+                //    mcastSocket.Bind(new IPEndPoint(IPAddress.Parse(host), port));
+                //}
             }
             else
             {
@@ -72,26 +81,35 @@ namespace ObserverNet
         public  int SendTo(byte[]data,int port=cport)
         {
              IPEndPoint ipep = new IPEndPoint(mcastAddr, port);
+             
              return  mcastSocket.SendTo(data, ipep);
         }
 
         public void Recvice()
         {
-            EndPoint point = new IPEndPoint(IPAddress.Any, 0);
-            while (true)
+            Task.Factory.StartNew(() =>
             {
-                byte[] bufLen = poolLen.Rent(4);
-                int r = mcastSocket.ReceiveFrom(bufLen, ref point);
-                if (r > 0)
+                int r = 0;
+               EndPoint point = new IPEndPoint(IPAddress.Any, 0);
+                while (true)
                 {
-                    byte[] buf = poolData.Rent(BitConverter.ToInt32(bufLen, 0));
-                    mcastSocket.ReceiveFrom(buf, ref point);
-                    MulticastCall(poolData, buf);
+                    //   byte[] bufLen = poolLen.Rent(1024);
+                    //  int r = mcastSocket.ReceiveFrom(bufLen, ref point);
+                    //  if (r > 0)
+                    //  {
+                    byte[] buf = poolData.Rent(1024);
+                    r = mcastSocket.ReceiveFrom(buf, ref point);
+                    byte[] tmp = poolData.Rent(r);
+                    Array.Copy(buf, tmp, r);
+                    poolData.Return(buf);
+                    MulticastCall(poolData, tmp,r);
+
+                    //  }
+                    //  poolLen.Return(bufLen);
 
                 }
-                poolLen.Return(bufLen);
-               
-            }
+            });
+         
         }
 
         public void Close()

@@ -50,6 +50,7 @@ namespace ObserverNet
         /// </summary>
         public void Start()
         {
+          
             Task.Factory.StartNew(() =>
             {
                 Thread.Sleep(WaitTime);
@@ -184,5 +185,11 @@ namespace ObserverNet
           
         }
     
+        public void SendReg()
+        {
+            AddressInfo info = new AddressInfo();
+            info.Reset(LocalNode.TopicAddress);
+            Multicast.SendTo(DataPack.PackReg(LocalNode.NodeId,info));
+        }
     }
 }

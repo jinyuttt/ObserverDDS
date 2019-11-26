@@ -66,7 +66,7 @@ namespace ObserverNet
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static TopicMessage UnPackNewTopic(byte[]data)
+        public static TopicMessage UnPackNewTopic(byte[]data,int count)
         {
             TopicMessage message = new TopicMessage();
             byte[] tmp = new byte[data.Length - 1];
@@ -80,14 +80,12 @@ namespace ObserverNet
             string topic = Encoding.Default.GetString(lenSP.ToArray());
             lenSP = bytes.Slice(8+ topicLen, 8);
            long id= BitConverter.ToInt32(lenSP.ToArray(), 0);
-            lenSP = bytes.Slice(16 + topicLen, data.Length-16- topicLen);
+            lenSP = bytes.Slice(16 + topicLen, count - 16- topicLen);
             string addr= Encoding.Default.GetString(lenSP.ToArray());
             message.Address = addr;
             message.NodeId = id;
             message.TopicName = topic;
             return message;
-
-
         }
 
         /// <summary>
@@ -101,7 +99,7 @@ namespace ObserverNet
             byte[] tmp = new byte[topics.Length +1];
             Array.Copy(topics, 0, tmp, 1, topics.Length );
             tmp[0] = 2;
-            return topics;
+            return tmp;
         }
 
         /// <summary>
@@ -111,6 +109,10 @@ namespace ObserverNet
         /// <returns></returns>
         public static byte[] PackCopyRspTopic(AddressInfo[] addresses)
         {
+            if(addresses==null)
+            {
+                return null;
+            }
             List<byte> lst = new List<byte>();
             lst.AddRange(BitConverter.GetBytes(addresses.Length));
             foreach(var p in addresses)
@@ -231,10 +233,10 @@ namespace ObserverNet
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static string UnPackNodeState(byte[] data)
+        public static string UnPackNodeState(byte[] data,int count)
         {
-            byte[] tmp = new byte[data.Length - 1];
-            Array.Copy(data, 1, tmp, 0, data.Length - 1);
+            byte[] tmp = new byte[count - 1];
+            Array.Copy(data, 1, tmp, 0, count - 1);
             return Encoding.Default.GetString(tmp);
         }
 
@@ -243,7 +245,7 @@ namespace ObserverNet
        /// </summary>
        /// <param name="data"></param>
        /// <returns></returns>
-        public static Dictionary<string,List<AddressInfo>>  UnPackUpdatePublicList(byte[]data,out long nodeid)
+        public static Dictionary<string,List<AddressInfo>>  UnPackUpdatePublicList(byte[]data,int count,out long nodeid)
         {
             byte[] len = new byte[2];
             byte[] tmp = new byte[1024];
@@ -255,7 +257,7 @@ namespace ObserverNet
             byte[] bufID = new byte[8];
             memory.Read(bufID, 0, 8);
             nodeid = BitConverter.ToInt64(bufID,0);
-            while (memory.Position < memory.Length)
+            while (memory.Position < count)
             {
                 lst = new List<AddressInfo>();
                 memory.Read(len, 0, 2);
@@ -335,10 +337,10 @@ namespace ObserverNet
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static  string UnPackReg(byte[]data)
+        public static  string UnPackReg(byte[]data,int count)
         {
-            byte[] tmp = new byte[data.Length - 1];
-            Array.Copy(data, 1, tmp, 0, data.Length - 1);
+            byte[] tmp = new byte[count - 1];
+            Array.Copy(data, 1, tmp, 0, count - 1);
             return Encoding.Default.GetString(tmp);
         }
 
@@ -381,6 +383,58 @@ namespace ObserverNet
             topic.Data = tmp;
             return topic;
 
+        }
+
+        /// <summary>
+        /// 新增发布主题回复
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static TopicMessage UnPackNewTopicRsp(byte[] data, int count)
+        {
+            TopicMessage message = new TopicMessage();
+            byte[] tmp = new byte[data.Length - 1];
+            Array.Copy(data, 1, tmp, 0, data.Length - 1);
+            Span<byte> bytes = tmp;
+            var lenSP = bytes.Slice(0, 4);
+            int len = BitConverter.ToInt32(lenSP.ToArray(), 0);
+            lenSP = bytes.Slice(4, 4);
+            int topicLen = BitConverter.ToInt32(lenSP.ToArray(), 0);
+            lenSP = bytes.Slice(8, topicLen);
+            string topic = Encoding.Default.GetString(lenSP.ToArray());
+            lenSP = bytes.Slice(8 + topicLen, 8);
+            long id = BitConverter.ToInt32(lenSP.ToArray(), 0);
+            lenSP = bytes.Slice(16 + topicLen, count - 16 - topicLen);
+            string addr = Encoding.Default.GetString(lenSP.ToArray());
+            message.Address = addr;
+            message.NodeId = id;
+            message.TopicName = topic;
+            return message;
+        }
+        /// <summary>
+        /// 新增主题
+        /// </summary>
+        /// <param name="topic"></param>
+        /// <param name="nodeId"></param>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public static byte[] PackNewTopicRsp(string topic, long nodeId, string address)
+        {
+            byte[] topics = Encoding.Default.GetBytes(topic);
+            byte[] addr = Encoding.Default.GetBytes(address);
+            byte[] topicLen = BitConverter.GetBytes(topics.Length);
+            byte[] len = BitConverter.GetBytes(topics.Length + addr.Length + 4);
+            byte[] bytes = new byte[topics.Length + addr.Length + topicLen.Length + len.Length + 8];
+            //
+            Array.Copy(len, bytes, 4);//总长
+            Array.Copy(topicLen, 0, bytes, 4, 4);//主题长度
+            Array.Copy(topics, 0, bytes, 8, topics.Length);//主题
+            Array.Copy(BitConverter.GetBytes(nodeId), 0, bytes, 8 + topics.Length, 8);//id
+            Array.Copy(addr, 0, bytes, topics.Length + 16, addr.Length);//地址
+            byte[] tmp = new byte[bytes.Length + 1];
+            tmp[0] = 4;
+            Array.Copy(bytes, 0, tmp, 1, bytes.Length);
+            return tmp;
         }
     }
 }

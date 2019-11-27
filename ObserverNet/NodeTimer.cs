@@ -132,7 +132,8 @@ namespace ObserverNet
                             }
                             else
                             {
-                                UDPSocket uDP = new UDPSocket();
+                                //UDPSocket uDP = new UDPSocket();
+                                UDPSocketPack uDP = new UDPSocketPack();
                                 byte[] buf = new byte[1024];
                                 int num = WaitTectNum;
                                 while (num > 0)
@@ -140,7 +141,7 @@ namespace ObserverNet
                                     uDP.Send(address[0], int.Parse(address[1]), tectBytes);
                                     var tsk = Task.Factory.StartNew(() =>
                                     {
-                                        return uDP.Recvice(buf);
+                                        return uDP.Recvice(buf);//有数据返回就说明收到了；
 
                                     });
                                     if (tsk.Wait(50))

@@ -127,7 +127,8 @@ namespace ObserverNet
                     }
                     else
                     {
-                        UDPSocket uDP = new UDPSocket();
+                        // UDPSocket uDP = new UDPSocket();
+                        UDPSocketPack uDP = new UDPSocketPack();
                         int num = udpTimes;
                         while (true)
                         {

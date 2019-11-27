@@ -30,7 +30,8 @@ namespace ObserverNet
     {
         private static readonly Lazy<SubscribeMessage> obj = new Lazy<SubscribeMessage>();
 
-        private readonly UDPSocket uDP = new UDPSocket();
+        // private readonly UDPSocket uDP = new UDPSocket();
+        readonly UDPSocketPack uDP = new UDPSocketPack();
         private readonly TcpServerSocket tcp = new TcpServerSocket();
         private object lock_obj = new object();//
         private bool isInit = false;//是否初始化
@@ -60,7 +61,8 @@ namespace ObserverNet
                 }
                 isInit = true;
                 uDP.Bind();
-                uDP.UDPCall += UDP_UDPCall;
+                // uDP.UDPCall += UDP_UDPCall;
+                uDP.UDPCall += UDP_UDPCall1;
                 Task.Factory.StartNew(() =>
                 {
                     uDP.StartRecvice();
@@ -72,6 +74,12 @@ namespace ObserverNet
                 UdpAddress = uDP.LocalPoint.Address + "_" + uDP.LocalPoint.Port;
 
             }
+        }
+
+        private void UDP_UDPCall1(object sender ,byte[] data, SocketRsp rsp)
+        {
+           
+            Process(data, rsp);
         }
 
         private void Tcp_CallSrv(System.Buffers.ArrayPool<byte> pool, byte[] data,int len,SocketRsp rsp)

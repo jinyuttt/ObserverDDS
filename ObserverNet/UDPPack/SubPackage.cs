@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ObserverNet
+﻿namespace ObserverNet
 {
 
     /// <summary>
     /// 数据小包
     /// </summary>
-   public class SessionPackage
+    public class SubPackage
     {
         public byte[] Data { get; set; }
 
@@ -21,5 +17,7 @@ namespace ObserverNet
         public int SessionId { get; set; }
 
         public int PackNum { get; set; }
+
+        public byte DataType { get; set; }
     }
 }

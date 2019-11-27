@@ -21,16 +21,15 @@
 
 
 using System;
-using System.Buffers;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-
+using System.Collections.Concurrent;
 namespace ObserverNet
 {
     public  class Publisher
     {
-     
 
+        ConcurrentDictionary<string, UDPSocketPack> dicReq = new ConcurrentDictionary<string, UDPSocketPack>();
+        ConcurrentDictionary<UDPSocketPack, string> dicReqTopic = new ConcurrentDictionary<UDPSocketPack, string>();
         private static readonly Lazy<Publisher> obj = new Lazy<Publisher>();
         public static Publisher Instance
         {
@@ -98,35 +97,8 @@ namespace ObserverNet
                         }
                         else
                         {
-                            UDPSocket uDP = new UDPSocket();
-                            bool isSucess = false;
-                            for (int i = 0; i < 20; i++)
-                            {
-                               var tsk= Task.Factory.StartNew(() =>
-                                {
-                                    uDP.Send(p.Address, p.Port, bytes);
-                                    int r = uDP.Recvice(buf);
-                                    if (r > 0)
-                                    {
-                                         lst = DataPack.UnPackCopyRspTopic(buf);
-                                         SubscribeList.Subscribe.AddAddress(topic, lst.ToArray());
-                                    }
-                                });
-                                if(tsk.Wait(50))
-                                {
-                                    //成功就退出
-                                    isSucess = true;
-                                    break;
-                                }
 
-                               
-                            }
-                            if(isSucess)
-                            {
-                                //成功退出外层
-                                break;
-                            }
-
+                            RequestCopy(topic,p, bytes);
                            
                         }
                     }
@@ -142,6 +114,72 @@ namespace ObserverNet
                 PubData(array,topic, data);
             }
         }
+
+        /// <summary>
+        /// 请求复制
+        /// </summary>
+        /// <param name="topic"></param>
+        /// <param name="p"></param>
+        /// <param name="bytes"></param>
+        private void RequestCopy(string topic,AddressInfo p,byte[] bytes)
+        {
+         
+            UDPSocketPack uDP = new UDPSocketPack();
+            uDP= dicReq.GetOrAdd(topic,  uDP);
+            uDP.UDPCall -= UDP_UDPCall;
+            uDP.UDPCall += UDP_UDPCall;
+            uDP.Send(p.Address, p.Port, bytes);
+
+            
+            dicReqTopic[uDP] = topic;
+        }
+
+        private void UDP_UDPCall(object sender, byte[] data, SocketRsp rsp)
+        {
+            UDPSocketPack uDP = sender as UDPSocketPack;
+            var  lst = DataPack.UnPackCopyRspTopic(data);
+            string topic = dicReqTopic[uDP];
+            SubscribeList.Subscribe.AddAddress(topic, lst.ToArray());
+
+            dicReqTopic.TryRemove(uDP, out topic);
+            dicReq.TryRemove(topic,out uDP);
+            uDP.Close();
+
+
+        }
+
+        //private void OldCopy()
+        //{
+        //    // UDPSocket uDP = new UDPSocket();
+        //    UDPSocketPack uDP = new UDPSocketPack();
+        //    bool isSucess = false;
+        //    for (int i = 0; i < 20; i++)
+        //    {
+        //        var tsk = Task.Factory.StartNew(() =>
+        //        {
+        //            uDP.Send(p.Address, p.Port, bytes);
+        //            int r = uDP.Recvice(buf);
+        //            if (r > 0)
+        //            {
+        //                lst = DataPack.UnPackCopyRspTopic(buf);
+        //                SubscribeList.Subscribe.AddAddress(topic, lst.ToArray());
+        //            }
+        //        });
+        //        if (tsk.Wait(50))
+        //        {
+        //            //成功就退出
+        //            isSucess = true;
+        //            break;
+        //        }
+
+
+        //    }
+        //    if (isSucess)
+        //    {
+        //        //成功退出外层
+        //        break;
+        //    }
+        //}
 
         /// <summary>
         /// 发送数据
@@ -168,8 +206,8 @@ namespace ObserverNet
                 }
                 else
                 {
-                    UDPSocket uDP = new UDPSocket();
-                  
+                    //  UDPSocket uDP = new UDPSocket();
+                    UDPSocketPack uDP = new UDPSocketPack();
                     uDP.Send(p.Address, p.Port, bytes);
                  
                 }

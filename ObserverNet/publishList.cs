@@ -35,6 +35,12 @@ namespace ObserverNet
         private static readonly Lazy<PublishList> instance = new Lazy<PublishList>();
 
         private readonly ConcurrentDictionary<string, List<AddressInfo>> dicList = new ConcurrentDictionary<string, List<AddressInfo>>();
+
+        /// <summary>
+        /// 发布列表有修改
+        /// </summary>
+        public bool IsUpdate { get; set; }
+
         public static PublishList  Publish
         {
             get { return instance.Value; }
@@ -124,6 +130,7 @@ namespace ObserverNet
                         if (!bag.Contains(addr))
                         {
                             bag.Add(addr);
+                            IsUpdate = true;
                         }
                     }
                 }
@@ -157,6 +164,7 @@ namespace ObserverNet
                                 if (!bag.Contains(addr))
                                 {
                                     bag.Add(addr);
+                                    IsUpdate = true;
                                 }
                             }
                         }

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Study\\ObserverNet\\ObserverNet\\ObserverNet.csproj": {}
+    "E:\\study\\net\\ObserverNet\\ObserverNet\\ObserverNet.csproj": {}
   },
   "projects": {
-    "E:\\Study\\ObserverNet\\ObserverNet\\ObserverNet.csproj": {
+    "E:\\study\\net\\ObserverNet\\ObserverNet\\ObserverNet.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Study\\ObserverNet\\ObserverNet\\ObserverNet.csproj",
+        "projectUniqueName": "E:\\study\\net\\ObserverNet\\ObserverNet\\ObserverNet.csproj",
         "projectName": "ObserverNet",
-        "projectPath": "E:\\Study\\ObserverNet\\ObserverNet\\ObserverNet.csproj",
+        "projectPath": "E:\\study\\net\\ObserverNet\\ObserverNet\\ObserverNet.csproj",
         "packagesPath": "C:\\Users\\jinyu\\.nuget\\packages\\",
-        "outputPath": "E:\\Study\\ObserverNet\\ObserverNet\\obj\\",
+        "outputPath": "E:\\study\\net\\ObserverNet\\ObserverNet\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jinyu\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -67,7 +67,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100-preview3-014645\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -114,6 +114,9 @@ namespace ObserverNet
                 case 9:
                     ProcessReg(data,len);
                     break;
+                case 10:
+                    ProcessTriggerPubLisUpdate(data, len);
+                    break;
             }
         }
 
@@ -153,7 +156,7 @@ namespace ObserverNet
         {
             long curID = 0;
             var dic = DataPack.UnPackUpdatePublicList(data,len,out curID);
-            NodeList.UpdateListCurrentID = curID;
+            NodeList.UpdateListCurrentID = curID;//更新轮训节点
             //添加本地
             List<string> lstNew = new List<string>();
             foreach(var kv in dic)
@@ -173,8 +176,49 @@ namespace ObserverNet
                     SubscribeMgr.Instance.NewTopicRec(topic);
                 }
             }
+           if(PublishList.Publish.IsUpdate)
+            {
+                //如果发布列表有修改不一致，立即触发全网节点更新，但不影响正常的更新顺序
+                var bytes = DataPack.PackTriggerUpdatePublicList(LocalNode.NodeId, PublishList.Publish.CopyAddress());
+                multicast.SendTo(bytes);
+                PublishList.Publish.IsUpdate = false;
+            }
+
+        }
+
+
+        /// <summary>
+        /// 触发更新发布列表
+        /// </summary>
+        /// <param name="data"></param>
+        private void ProcessTriggerPubLisUpdate(byte[] data, int len)
+        {
+         
+            var dic = DataPack.UnPackTriggerUpdatePublicList(data, len);
+      
+            //添加本地
+            List<string> lstNew = new List<string>();
+            foreach (var kv in dic)
+            {
+                bool isAdd = PublishList.Publish.AddNode(kv.Key, kv.Value.ToArray());
+                if (isAdd)
+                {
+                    lstNew.Add(kv.Key);
+                }
+            }
+            foreach (var topic in lstNew)
+            {
+                //如果有发布地址新增主题，查看是否正在等待订阅
+                if (NodeList.dicWaitSubscribe.ContainsKey(topic))
+                {
+                    //再次订阅
+                    SubscribeMgr.Instance.NewTopicRec(topic);
+                }
+            }
            
-            
+
+
+
 
         }
 
@@ -194,6 +238,11 @@ namespace ObserverNet
             NodeTimer.Instance.UpdateList();
         }
 
+        /// <summary>
+        /// 处理新增主题
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="len"></param>
         private void ProcessNewTopicRsp(byte[] data, int len)
         {
             var msg = DataPack.UnPackNewTopicRsp(data, len);

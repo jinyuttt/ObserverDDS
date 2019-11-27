@@ -46,7 +46,7 @@ namespace ObserverNet
         private volatile bool isRecStop = true;
         private volatile bool isSendStop = true;
         private volatile bool isProcessRecStop = true;
-
+        private volatile bool isPspStop = true;
         public IPEndPoint LocalPoint
         {
             get { return (IPEndPoint)socket.LocalEndPoint; }
@@ -171,7 +171,11 @@ namespace ObserverNet
                                 }
                                 UDPCall(this,buf, new SocketRsp() { Address = buffer.Point.ToString(), Port = buffer.Point.Port });
                             }
-                           
+                           if(isPspStop)
+                            {
+                                isPspStop = false;
+                                ProcessRsp();
+                            }
                         }
                     }
                 }
@@ -193,6 +197,7 @@ namespace ObserverNet
                         socket.SendTo(rsp, buffer.Point);
                     }
                 }
+                isPspStop = true;
             });
         }
 

@@ -12,7 +12,7 @@ namespace ObserverNet
 
         public static UDPPackage Pack(byte[]data)
         {
-            int num = data.Length / Size + data.Length % Size;
+            int num = data.Length / Size + data.Length % Size>0?1:0;
             int sessionid = 0;
             int index = 0;
             byte[] bytesNum = BitConverter.GetBytes(num);
@@ -21,7 +21,7 @@ namespace ObserverNet
             for (int i=0;i<num;i++)
             {
                 SubPackage tp = null;
-                if (index + Size > data.Length)
+                if (index + Size < data.Length)
                 {
                     tp = new SubPackage() { Data = new byte[Size + 13], SeqId = i, };
                 }
@@ -32,7 +32,7 @@ namespace ObserverNet
                     Array.Copy(bytesNum, 0, tp.Data, 1,4);
                     Array.Copy(bytesSession, 0, tp.Data, 5, 4);
                     Array.Copy(BitConverter.GetBytes(i), 0, tp.Data, 9, 4);
-                    Array.Copy(data, index, tp.Data, 13, tp.Data.Length);
+                    Array.Copy(data, index, tp.Data, 13, tp.Data.Length-13);
                    index += Size;
                 tmp[i] = tp;
             }

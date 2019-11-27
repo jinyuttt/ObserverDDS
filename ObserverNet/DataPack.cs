@@ -447,7 +447,7 @@ namespace ObserverNet
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static Dictionary<string, List<AddressInfo>> UnPackTriggerUpdatePublicList(byte[] data, int count)
+        public static Dictionary<string, List<AddressInfo>> UnPackTriggerUpdatePublicList(byte[] data, int count,out long nodeid)
         {
             byte[] len = new byte[2];
             byte[] tmp = new byte[1024];
@@ -458,7 +458,7 @@ namespace ObserverNet
             List<AddressInfo> lst = null;
             byte[] bufID = new byte[8];
             memory.Read(bufID, 0, 8);
-            //nodeid = BitConverter.ToInt64(bufID, 0);
+            nodeid = BitConverter.ToInt64(bufID, 0);
             while (memory.Position < count)
             {
                 lst = new List<AddressInfo>();

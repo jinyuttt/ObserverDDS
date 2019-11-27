@@ -193,8 +193,14 @@ namespace ObserverNet
         /// <param name="data"></param>
         private void ProcessTriggerPubLisUpdate(byte[] data, int len)
         {
-         
-            var dic = DataPack.UnPackTriggerUpdatePublicList(data, len);
+
+            long nodeid = -1;
+            var dic = DataPack.UnPackTriggerUpdatePublicList(data, len,out nodeid);
+            if(nodeid==LocalNode.NodeId)
+            {
+                //本节点不再更新
+                return;
+            }
       
             //添加本地
             List<string> lstNew = new List<string>();

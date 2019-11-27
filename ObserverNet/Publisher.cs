@@ -23,14 +23,13 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ObserverNet
 {
     public  class Publisher
     {
-        readonly ArrayPool<byte> poolData = ArrayPool<byte>.Create(1024 * 1024, 10);
+     
 
         private static readonly Lazy<Publisher> obj = new Lazy<Publisher>();
         public static Publisher Instance
@@ -170,11 +169,9 @@ namespace ObserverNet
                 else
                 {
                     UDPSocket uDP = new UDPSocket();
-                    //byte[] buf = poolData.Rent(4 + bytes.Length);
-                    //Array.Copy(BitConverter.GetBytes(bytes.Length), 0, buf, 0, 4);
-                    //Array.Copy(bytes, 0, buf, 4, bytes.Length);
+                  
                     uDP.Send(p.Address, p.Port, bytes);
-                  //  poolData.Return(buf);
+                 
                 }
             }
         }

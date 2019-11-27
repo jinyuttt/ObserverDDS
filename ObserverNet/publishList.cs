@@ -67,49 +67,19 @@ namespace ObserverNet
         /// <param name="topic"></param>
         public void AddLocal(string topic)
         {
-            List<AddressInfo> bag = null;
-            if (dicList.TryGetValue(topic, out bag))
-            {
-                lock (bag)
+            List<AddressInfo> bag = new List<AddressInfo>();
+            var lst = dicList.GetOrAdd(topic, bag);
+           
+                lock (lst)
                 {
                     var addr = new AddressInfo();
                     addr.Reset(LocalNode.TopicAddress);
-                    if (!bag.Contains(addr))
+                    if (!lst.Contains(addr))
                     {
-                        bag.Add(addr);
+                    lst.Add(addr);
                     }
                 }
-            }
-            else
-            {
-                lock (dicList)
-                {
-                    //
-                    if (dicList.TryGetValue(topic, out bag))
-                    {
-                        lock (bag)
-                        {
-                            var addr = new AddressInfo();
-                            addr.Reset(LocalNode.TopicAddress);
-                            if (!bag.Contains(addr))
-                            {
-                                bag.Add(addr);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        bag = new List<AddressInfo>();
-                        var addr = new AddressInfo();
-                        addr.Reset(LocalNode.TopicAddress);
-                        
-                            bag.Add(addr);
-                        
-                      
-                        dicList[topic] = bag;
-                    }
-                }
-            }
+           
         }
 
         /// <summary>
@@ -120,9 +90,8 @@ namespace ObserverNet
         public bool AddNode(string topic,AddressInfo[] addresses)
         {
             bool addNew = false;
-            List<AddressInfo> bag = null;
-            if (dicList.TryGetValue(topic, out bag))
-            {
+            List<AddressInfo> bag = new List<AddressInfo>();
+           
                 lock (bag)
                 {
                     foreach (var addr in addresses)
@@ -134,44 +103,9 @@ namespace ObserverNet
                         }
                     }
                 }
-            }
-            else
-            {
-                lock (dicList)
-                {
-                    if (dicList.TryGetValue(topic, out bag))
-                    {
-                        lock (bag)
-                        {
-                            foreach (var addr in addresses)
-                            {
-                                if (!bag.Contains(addr))
-                                {
-                                    bag.Add(addr);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        bag = new List<AddressInfo>();
-                        dicList[topic] = bag;
-                        addNew = true;
-                        lock (bag)
-                        {
-                            foreach (var addr in addresses)
-                            {
-                                if (!bag.Contains(addr))
-                                {
-                                    bag.Add(addr);
-                                    IsUpdate = true;
-                                }
-                            }
-                        }
-                    }
-                }
-               
-            }
+            
+            
+            
             return addNew;
         }
 

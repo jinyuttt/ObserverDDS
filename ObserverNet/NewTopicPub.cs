@@ -34,7 +34,8 @@ namespace ObserverNet
     public  class NewTopicPub
     {
         private static readonly Lazy<NewTopicPub> instance = new Lazy<NewTopicPub>();
-       // MulticastSocket multicast = null;
+
+        private const int WaitNum = 20;
 
         public static NewTopicPub  Pub
         {
@@ -48,10 +49,16 @@ namespace ObserverNet
         public void SendNewTopic(string topic)
         {
             MulticastSocket multicast = new MulticastSocket();
+            int num = WaitNum;
             while (!NodeListener.Instance.IsComplete(topic))
             {
-                multicast.SendTo(DataPack.PackNewTopic(topic, LocalNode.NodeId, LocalNode.InfoTcp.ToString()));
+                num--;
+                multicast.SendTo(DataPack.PackNewTopic(topic, LocalNode.NodeId, LocalNode.TopicAddress));
                 Thread.Sleep(50);
+               if(num<0)
+                {
+                    break;
+                }
             }
             multicast.Close();
         }

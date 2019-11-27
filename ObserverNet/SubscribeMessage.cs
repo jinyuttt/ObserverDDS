@@ -121,7 +121,7 @@ namespace ObserverNet
             var bytes = DataPack.PackCopyRspTopic(addrs);
             if(bytes==null)
             {
-                bytes = new byte[0];
+                bytes = Encoding.Default.GetBytes(" ");
             }
             if(rsp.Rsp!=null)
             {
@@ -172,11 +172,14 @@ namespace ObserverNet
             }
         }
 
-
+        /// <summary>
+        /// 处理主题数据
+        /// </summary>
+        /// <param name="data"></param>
         private void ProcessTopic(byte[]data)
         {
            var p= DataPack.UnPackTopicData(data);
-
+            SubscribeMgr.Instance.AddData(p);
         }
     }
 }

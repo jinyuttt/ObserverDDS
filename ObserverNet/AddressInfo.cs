@@ -56,7 +56,7 @@ namespace ObserverNet
         {
             string[] tmp = addr.Split('_');
             Address = tmp[1];
-            Port =int.Parse( tmp[2]);
+            Port =int.Parse(tmp[2]);
             Protol = int.Parse(tmp[0]);
         }
 

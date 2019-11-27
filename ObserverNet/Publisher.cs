@@ -50,19 +50,21 @@ namespace ObserverNet
             {
                 ObserverInit.Init();
             }
-           var array= SubscribeList.Subscribe.GetAddresses(topic);
-            if(array==null)
+            var array= SubscribeList.Subscribe.GetAddresses(topic);
+            if(array==null||array.Length==0)
             {
+                //没有订阅看发布
                 array =  PublishList.Publish.GetAddresses(topic);
-                if(array == null)
+                if(array == null||(array.Length==1&&array[0].ToString()==LocalNode.TopicAddress))
                 {
-                    //没有地址，组播扩展新增
+                    //没有地址，或者只是本节点发布了数据，当做新增，组播扩展新增
                     NewTopicPub.Pub.SendNewTopic(topic);
                     PublishList.Publish.AddLocal(topic);
                     array = SubscribeList.Subscribe.GetAddresses(topic);
                     if(array!=null)
                     {
-                        PubData(array, data);
+                        //再次订阅的地址
+                        PubData(array,topic, data);
                     }
                     else
                     {
@@ -72,7 +74,7 @@ namespace ObserverNet
                 else
                 {
                     //复制订阅地址
-                    List<AddressInfo> lst = null;
+                    List<AddressInfo> lst = null;//地址
                     foreach (var p in array)
                     {
                         var bytes = DataPack.PackCopyTopic(topic);
@@ -88,10 +90,10 @@ namespace ObserverNet
 
                                 tcpClient.Send(bytes);
                                 int r = tcpClient.Recvice(buf);
-                                 lst = DataPack.UnPackCopyTopic(buf);
+                                 lst = DataPack.UnPackCopyRspTopic(buf);
                                 SubscribeList.Subscribe.AddAddress(topic, lst.ToArray());
                                 tcpClient.Close();
-                                break;
+                                break;//成功一个就退出
                             }
                             tcpClient.Close();
                         }
@@ -99,7 +101,7 @@ namespace ObserverNet
                         {
                             UDPSocket uDP = new UDPSocket();
                             bool isSucess = false;
-                            for (int i = 0; i < 10; i++)
+                            for (int i = 0; i < 20; i++)
                             {
                                var tsk= Task.Factory.StartNew(() =>
                                 {
@@ -107,12 +109,13 @@ namespace ObserverNet
                                     int r = uDP.Recvice(buf);
                                     if (r > 0)
                                     {
-                                         lst = DataPack.UnPackCopyTopic(buf);
+                                         lst = DataPack.UnPackCopyRspTopic(buf);
                                          SubscribeList.Subscribe.AddAddress(topic, lst.ToArray());
                                     }
                                 });
-                                if(tsk.Wait(100))
+                                if(tsk.Wait(50))
                                 {
+                                    //成功就退出
                                     isSucess = true;
                                     break;
                                 }
@@ -121,32 +124,34 @@ namespace ObserverNet
                             }
                             if(isSucess)
                             {
+                                //成功退出外层
                                 break;
                             }
+
+                           
                         }
                     }
                     if(lst!=null)
                     {
-                        PubData(lst.ToArray(), data);
+                        PubData(lst.ToArray(),topic, data);
                     }
                 }
 
             }
             else
             {
-                PubData(array, data);
+                PubData(array,topic, data);
             }
         }
-         
-       /// <summary>
-       /// 发送数据
-       /// </summary>
-       /// <param name="lst"></param>
-       /// <param name="dat"></param>
-        private void   PubData(AddressInfo[] lst, byte[] data)
 
+        /// <summary>
+        /// 发送数据
+        /// </summary>
+        /// <param name="lst"></param>
+        /// <param name="dat"></param>
+        private void PubData(AddressInfo[] lst,string topic, byte[] data)
         {
-
+            byte[] bytes = DataPack.PackTopicData(topic, data);
             foreach (var p in lst)
             {
                 if (p.Protol == 0)
@@ -156,8 +161,8 @@ namespace ObserverNet
                     tcp.RemotePort = p.Port;
                     if (tcp.Connect())
                     {
-                        tcp.Send(BitConverter.GetBytes(data.Length));
-                        tcp.Send(data);
+                        tcp.Send(BitConverter.GetBytes(bytes.Length));
+                        tcp.Send(bytes);
                         tcp.Close();
                     }
 
@@ -165,11 +170,11 @@ namespace ObserverNet
                 else
                 {
                     UDPSocket uDP = new UDPSocket();
-                    byte[] buf = poolData.Rent(4 + data.Length);
-                    Array.Copy(BitConverter.GetBytes(data.Length), 0, buf, 0, 4);
-                    Array.Copy(data, 0, buf, 4, data.Length);
-                    uDP.Send(p.Address, p.Port, buf);
-                    poolData.Return(buf);
+                    //byte[] buf = poolData.Rent(4 + bytes.Length);
+                    //Array.Copy(BitConverter.GetBytes(bytes.Length), 0, buf, 0, 4);
+                    //Array.Copy(bytes, 0, buf, 4, bytes.Length);
+                    uDP.Send(p.Address, p.Port, bytes);
+                  //  poolData.Return(buf);
                 }
             }
         }

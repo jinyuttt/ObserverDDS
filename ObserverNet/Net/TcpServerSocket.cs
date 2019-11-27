@@ -118,7 +118,16 @@ namespace ObserverNet
                 byte[] bufLen = null;
                 if (poolLen.TryDequeue(out bufLen))
                 {
-                    int count = socketSend.Receive(bufLen);
+                    int count = 0;
+                    try
+                    {
+                        count= socketSend.Receive(bufLen);
+                    }
+                    catch(SocketException ex)
+                    {
+                        poolLen.Enqueue(bufLen);
+                        break;
+                    }
                     if (count == 0)//count 表示客户端关闭，要退出循环
                     {
                         break;

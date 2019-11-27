@@ -123,11 +123,12 @@ namespace ObserverNet
                                     string id = node.Substring(0, index);
                                     NodeList.LstNodeInfo.Remove(node);
                                     NodeList.UpdateListId.Remove(long.Parse(id));
+                                    AddressInfo info = new AddressInfo();
+                                    info.Reset(addr);
+                                    SubscribeList.Subscribe.Remove(info);
                                 }
-                                //UDP不管，TCP时移除订阅列表
-                                AddressInfo info = new AddressInfo();
-                                info.Reset(addr);
-                                SubscribeList.Subscribe.Remove(info);
+                               
+                              
                             }
                             else
                             {

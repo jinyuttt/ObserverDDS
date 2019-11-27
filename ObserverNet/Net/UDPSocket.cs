@@ -90,23 +90,20 @@ namespace ObserverNet
             while (true)
             {
                 byte[] buf = poolLen.Rent(1024);
-                //int r = socket.ReceiveFrom(bufLen, ref point);
-                //if(r==0)
-                //{
-                //    break;
-                //}
-                //if (r > 0)
-                //{
-                  //  byte[] buf = poolData.Rent(BitConverter.ToInt32(bufLen, 0));
+             
                     r=socket.ReceiveFrom(buf, ref point);
                     IPEndPoint iP = (IPEndPoint)point;
                     UDPCall(poolData, buf,r,new SocketRsp() { Address = iP.Address.ToString(), Port = iP.Port });
-                //}
-               // poolLen.Return(bufLen);
+              
             }
 
         }
 
+        /// <summary>
+        /// 独立接受
+        /// </summary>
+        /// <param name="buf"></param>
+        /// <returns></returns>
         public int Recvice(byte[] buf)
         {
             EndPoint point = new IPEndPoint(IPAddress.Any, 0);
@@ -117,6 +114,9 @@ namespace ObserverNet
 
         }
 
+        /// <summary>
+        /// 关闭
+        /// </summary>
         public void Close()
         {
             

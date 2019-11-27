@@ -91,8 +91,8 @@ namespace ObserverNet
         {
             bool addNew = false;
             List<AddressInfo> bag = new List<AddressInfo>();
-           
-                lock (bag)
+            bag = dicList.GetOrAdd(topic, bag);
+            lock (bag)
                 {
                     foreach (var addr in addresses)
                     {

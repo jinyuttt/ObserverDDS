@@ -12,4 +12,4 @@ E:\Study\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.AssemblyIn
 E:\Study\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.AssemblyInfo.cs
 E:\Study\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.dll
 E:\Study\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.pdb
-E:\study\net\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.csprojAssemblyReference.cache
+E:\Study\net\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.csprojAssemblyReference.cache

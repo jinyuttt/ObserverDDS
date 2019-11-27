@@ -90,11 +90,10 @@ namespace ObserverNet
             while (true)
             {
                 byte[] buf = poolLen.Rent(1024);
-             
-                    r=socket.ReceiveFrom(buf, ref point);
-                    IPEndPoint iP = (IPEndPoint)point;
-                    UDPCall(poolData, buf,r,new SocketRsp() { Address = iP.Address.ToString(), Port = iP.Port });
-              
+                r = socket.ReceiveFrom(buf, ref point);
+                IPEndPoint iP = (IPEndPoint)point;
+                UDPCall(poolData, buf, r, new SocketRsp() { Address = iP.Address.ToString(), Port = iP.Port });
+
             }
 
         }

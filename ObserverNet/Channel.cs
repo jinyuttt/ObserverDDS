@@ -2,7 +2,7 @@
 /*----------------------------------------------------------------
 * 项目名称 ：ObserverNet
 * 项目描述 ：
-* 类 名 称 ：DataChannel
+* 类 名 称 ：Channel
 * 类 描 述 ：
 * 所在的域 ：DESKTOP-1IBOINI
 * 命名空间 ：ObserverNet
@@ -26,8 +26,7 @@ using System.Text;
 
 namespace ObserverNet
 {
-   public class DataChannel
+    class Channel
     {
-
     }
 }

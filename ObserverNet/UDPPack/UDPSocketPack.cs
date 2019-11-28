@@ -26,6 +26,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Generic;
+using System;
 
 namespace ObserverNet
 {
@@ -34,11 +35,16 @@ namespace ObserverNet
     {
      
         readonly Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
         readonly ConcurrentDictionary<int, UDPPackage> sendQueue = new ConcurrentDictionary<int, UDPPackage>();
+
         readonly UDPSession recsession = new UDPSession();
+
         readonly ConcurrentQueue<RecviceBuffer> recQueue = new ConcurrentQueue<RecviceBuffer>();
+
         readonly ConcurrentQueue<RspBuffer> rspQueue = new ConcurrentQueue<RspBuffer>();
-        readonly ConcurrentDictionary<string, string> dicFilter = new ConcurrentDictionary<string, string>();
+
+       
         public const int MaxNum = 20;
 
         public event UDPSessionCall UDPCall;
@@ -117,30 +123,37 @@ namespace ObserverNet
         {
             isRecStop = false;
             EndPoint point = new IPEndPoint(IPAddress.Any, 0);
-            int len = 0;
-            while (isRun)
+            Task.Factory.StartNew(() =>
             {
+                int len = 0;
+                while (isRun)
+                {
 
-                byte[] buf = new byte[UDPPack.PackSize];
-                try
-                {
-                    len = socket.ReceiveFrom(buf, ref point);
+                    byte[] buf = new byte[UDPPack.PackSize];
+                    try
+                    {
+                        len = socket.ReceiveFrom(buf, ref point);
+                    }
+                    catch (SocketException ex)
+                    {
+                        break;
+                    }
+                    IPEndPoint iP = (IPEndPoint)point;
+                    recQueue.Enqueue(new RecviceBuffer() { Point = iP, Data = buf, Len = len });
+                    if (isProcessRecStop)
+                    {
+                        isProcessRecStop = false;
+                        ProcessRecvice();
+                    }
                 }
-                catch(SocketException ex)
-                {
-                    break;
-                }
-                IPEndPoint iP = (IPEndPoint)point;
-                recQueue.Enqueue(new RecviceBuffer() {  Point=iP, Data = buf,   Len=len});
-                if(isProcessRecStop)
-                {
-                    isProcessRecStop = false;
-                    ProcessRecvice();
-                }
-            }
+            });
+           
 
         }
 
+        /// <summary>
+        /// 处理接收的数据
+        /// </summary>
         private void ProcessRecvice()
         {
             Task.Factory.StartNew(() =>
@@ -161,15 +174,20 @@ namespace ObserverNet
                         }
                         else
                         {
-                            rspQueue.Enqueue(new RspBuffer() { Point = buffer.Point, Package = p });
-                            if(recsession.AddData(buffer.Point.ToString()+buffer.Point.Port, p))
+                            rspQueue.Enqueue(new RspBuffer() { Point = buffer.Point, Package = p });//准备回执
+                            if(recsession.AddData(buffer.Point.ToString(), p))
                             {
-                               var buf=recsession.GetData(buffer.Point.ToString() + buffer.Point.Port,p.SessionId);
-                                if(dicFilter.ContainsKey(buffer.Point.ToString() + buffer.Point.Port+","+p.SessionId))
+                               var buf=recsession.GetData(buffer.Point.ToString(),p.SessionId);
+                                if(UDPPackProcess.Instance.dicFilter.ContainsKey(buffer.Point.ToString()+","+p.SessionId))
                                 {
                                     continue;
                                 }
-                                UDPCall(this,buf, new SocketRsp() { Address = buffer.Point.ToString(), Port = buffer.Point.Port });
+                                else
+                                {
+                                    UDPPackProcess.Instance.dicFilter[buffer.Point.ToString() + "," + p.SessionId] =DateTime.Now.Second;
+                                }
+                                if(UDPCall!=null)
+                                   UDPCall(this,buf, new SocketRsp() { Address = buffer.Point.Address.ToString(), Port = buffer.Point.Port });
                             }
                            if(isPspStop)
                             {
@@ -183,6 +201,9 @@ namespace ObserverNet
             });
         }
 
+        /// <summary>
+        /// 处理数据接收回执
+        /// </summary>
         private void ProcessRsp()
         {
             Task.Factory.StartNew(() =>
@@ -224,6 +245,9 @@ namespace ObserverNet
             socket.Close();
         }
 
+        /// <summary>
+        /// 重复发送
+        /// </summary>
         private void ReSend()
         {
             Task.Factory.StartNew(() =>

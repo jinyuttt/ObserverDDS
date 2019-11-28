@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 
 namespace ObserverNet
 {
@@ -8,12 +9,18 @@ namespace ObserverNet
     {
         private const int Size = 1475-13;
         public const int PackSize = 1475;
+     
 
-
+        
+        /// <summary>
+        /// 打包发送数据
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static UDPPackage Pack(byte[]data)
         {
             int num = data.Length / Size + data.Length % Size>0?1:0;
-            int sessionid = 0;
+            int sessionid = UDPPackProcess.Instance.GetID();
             int index = 0;
             byte[] bytesNum = BitConverter.GetBytes(num);
             byte[] bytesSession = BitConverter.GetBytes(sessionid);
@@ -41,6 +48,12 @@ namespace ObserverNet
             return uDP;
         }
 
+        /// <summary>
+        /// 解析数据
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="len"></param>
+        /// <returns></returns>
         public static SubPackage UnPack(byte[] data,int len=0)
         {
             MemoryStream memory = new MemoryStream(data);
@@ -64,6 +77,11 @@ namespace ObserverNet
             return package;
         }
 
+        /// <summary>
+        /// 处理回执数据
+        /// </summary>
+        /// <param name="package"></param>
+        /// <returns></returns>
         public static byte[] PackRsp(SubPackage package)
         {
             byte[] rsp = new byte[13];

@@ -133,7 +133,7 @@ namespace ObserverNet
                         while (true)
                         {
                             uDP.Send(addr.Address, addr.Port, tmp);
-                            byte[] buf = new byte[3];
+                            byte[] buf = new byte[1024];
 
                             var tsk = Task.Factory.StartNew(() =>
                               {

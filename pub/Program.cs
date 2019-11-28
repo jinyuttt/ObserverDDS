@@ -15,7 +15,7 @@ namespace pub
             while(true)
             {
                 publisher.Publish("test", Encoding.Default.GetBytes(DateTime.Now.ToString()));
-                Thread.Sleep(500);
+                Thread.Sleep(1000);
             }
         }
     }

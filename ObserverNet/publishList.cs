@@ -82,31 +82,32 @@ namespace ObserverNet
            
         }
 
+        
         /// <summary>
-        /// 添加新的发布地址
+        /// 新增发布地址
         /// </summary>
-        /// <param name="topic"></param>
-        /// <param name="addresses"></param>
-        public bool AddNode(string topic,AddressInfo[] addresses)
+        /// <param name="topic">主题</param>
+        /// <param name="addresses">地址</param>
+        /// <returns>新增的节点发布</returns>
+        public List<AddressInfo> AddNode(string topic,AddressInfo[] addresses)
         {
-            bool addNew = false;
+            List<AddressInfo> lstNew = new List<AddressInfo>();
             List<AddressInfo> bag = new List<AddressInfo>();
             bag = dicList.GetOrAdd(topic, bag);
             lock (bag)
+            {
+                foreach (var addr in addresses)
                 {
-                    foreach (var addr in addresses)
+                    if (!bag.Contains(addr))
                     {
-                        if (!bag.Contains(addr))
-                        {
-                            bag.Add(addr);
-                            IsUpdate = true;
-                        }
+                        bag.Add(addr);
+                        lstNew.Add(addr);
+                        IsUpdate = true;
+                       
                     }
                 }
-            
-            
-            
-            return addNew;
+            }
+            return lstNew;
         }
 
         /// <summary>

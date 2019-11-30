@@ -49,6 +49,7 @@ namespace ObserverNet
 
         public event UDPSessionCall UDPCall;
         public volatile bool isRun = true;
+        private volatile bool isStop = false;//是否接收后关闭
         private volatile bool isRecStop = true;
         private volatile bool isSendStop = true;
         private volatile bool isProcessRecStop = true;
@@ -56,6 +57,14 @@ namespace ObserverNet
         public IPEndPoint LocalPoint
         {
             get { return (IPEndPoint)socket.LocalEndPoint; }
+        }
+
+        /// <summary>
+        /// 是否释放
+        /// </summary>
+        public bool IsDispose
+        {
+            get { return isRun; }
         }
         /// <summary>
         /// 发送数据
@@ -80,14 +89,21 @@ namespace ObserverNet
             }
             if(isSendStop)
             {
-                isRecStop = false;
+                isSendStop = false;
                 ReSend();
             }
         }
 
         private void SendTo(SubPackage package, IPEndPoint point)
         {
-            socket.SendTo(package.Data, point);
+            try
+            {
+                socket.SendTo(package.Data, point);
+            }
+            catch
+            {
+
+            }
         }
         /// <summary>
         /// 绑定
@@ -121,7 +137,7 @@ namespace ObserverNet
         /// </summary>
         public void StartRecvice()
         {
-            isRecStop = false;
+          
             EndPoint point = new IPEndPoint(IPAddress.Any, 0);
             Task.Factory.StartNew(() =>
             {
@@ -215,7 +231,21 @@ namespace ObserverNet
                     if (rspQueue.TryDequeue(out buffer))
                     {
                         var rsp = UDPPack.PackRsp(buffer.Package);
-                        socket.SendTo(rsp, buffer.Point);
+                        try
+                        {
+                            socket.SendTo(rsp, buffer.Point);
+                        }
+                        catch(SocketException ex)
+                        {
+                            break;
+                        }
+                        catch(ObjectDisposedException ex)
+                        {
+                            this.sendQueue.Clear();
+                            
+                            this.recsession.Close();
+                            break;
+                        }
                     }
                 }
                 isPspStop = true;
@@ -229,10 +259,16 @@ namespace ObserverNet
         /// <returns></returns>
         public int Recvice(byte[] buf)
         {
-            EndPoint point = new IPEndPoint(IPAddress.Any, 0);
+            try
+            {
+                EndPoint point = new IPEndPoint(IPAddress.Any, 0);
 
-            return socket.ReceiveFrom(buf, ref point);
-
+                return socket.ReceiveFrom(buf, ref point);
+            }
+            catch
+            {
+                return -1;
+            }
 
         }
 
@@ -243,6 +279,12 @@ namespace ObserverNet
         {
             isRun = false;
             socket.Close();
+        }
+
+        //接收返回户关闭
+        public void Stop()
+        {
+            isStop = true;
         }
 
         /// <summary>
@@ -290,6 +332,11 @@ namespace ObserverNet
                     Thread.Sleep(50);
                 }
                 isSendStop = true;
+                if(isStop)
+                {
+                    //已经停止，处理完发送后关闭
+                    Close();
+                }
             });
         }
     }

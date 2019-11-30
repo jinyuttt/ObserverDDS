@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace ObserverNet
 {
@@ -35,13 +36,18 @@ namespace ObserverNet
        
         /// <summary>
         /// 过滤一个节点只订阅网络一次即可
+        /// 订阅不成功由等待订阅主题控制
         /// </summary>
         private readonly ConcurrentDictionary<string, string> dicFilter = new ConcurrentDictionary<string, string>();
 
 
         private readonly ConcurrentDictionary<string, List<Subscriber>> dicSubscriber = new ConcurrentDictionary<string, List<Subscriber>>();
 
+
         private readonly ConcurrentQueue<TopicData> queue = new ConcurrentQueue<TopicData>();
+
+
+        
 
         private bool isRun = false;
         public static SubscribeMgr Instance
@@ -56,28 +62,23 @@ namespace ObserverNet
         /// <param name="topic"></param>
         public void Add(Subscriber subscriber, string topic)
         {
-            List<Subscriber> lst = null;
+            List<Subscriber> lst = new List<Subscriber>();
 
-            if (dicSubscriber.TryGetValue(topic, out lst))
+            lst = dicSubscriber.GetOrAdd(topic, lst);
+
+            lock (lst)
             {
-                lock (lst)
+                if (!lst.Contains(subscriber))
                 {
-                    if (!lst.Contains(subscriber))
-                    {
-                        lst.Add(subscriber);
-                    }
-                }
-            }
-            else
-            {
-                lst = new List<Subscriber>();
-                lock (lst)
-                {
-                    dicSubscriber[topic] = lst;
                     lst.Add(subscriber);
                 }
             }
-            SendSubscriber(topic);
+
+            if (!dicFilter.ContainsKey(topic))
+            {
+                SendSubscriber(topic);
+                dicFilter[topic] = null;
+            }
         }
 
         public void Remove(Subscriber subscriber, string topic)
@@ -92,77 +93,41 @@ namespace ObserverNet
                 }
             }
         }
+
+
         /// <summary>
         /// 发送订阅信息
         /// </summary>
         /// <param name="topic"></param>
         private void SendSubscriber(string topic)
         {
-            if(dicFilter.ContainsKey(topic))
-            {
-                return;
-            }
-            dicFilter[topic] = null;
-            var array=  PublishList.Publish.GetAddresses(topic);
+           
+            var array =  PublishList.Publish.GetAddresses(topic);
             bool isSucess = false;
             //发送订阅信息
            if(array!=null)
             {
-                var local = new AddressInfo();
-                local.Reset(LocalNode.TopicAddress);
-                byte[] tmp = DataPack.PackSubscribeMsg(topic,new AddressInfo[] {local  });
+               //首次直接订阅
                 foreach (var addr in array)
                 {
-                    if(addr.Protol==0)
+                    var r = SendSubscribeTopic(topic, addr);
+                    if (r)
                     {
-                        TcpClientSocket tcp = new TcpClientSocket();
-                        tcp.RemoteHost = addr.Address;
-                        tcp.RemotePort = addr.Port;
-                        if(tcp.Connect())
-                        {
-                            tcp.Send(tmp);
-                            isSucess = true;
-                        }
-                        tcp.Close();
-                    }
-                    else
-                    {
-                        // UDPSocket uDP = new UDPSocket();
-                        UDPSocketPack uDP = new UDPSocketPack();
-                        int num = udpTimes;
-                        while (true)
-                        {
-                            uDP.Send(addr.Address, addr.Port, tmp);
-                            byte[] buf = new byte[1024];
-
-                            var tsk = Task.Factory.StartNew(() =>
-                              {
-                                  return uDP.Recvice(buf);//只要有接收就确定收到
-                              });
-                            if(tsk.Wait(udpWait))
-                            {
-                                isSucess = true;
-                                break;
-                            }
-                            num--;
-                            if(num<0)
-                            {
-                                break;
-                            }
-                        }
-                        
+                        isSucess = true;
+                      
                     }
                 }
             }
             else
             {
                 //没有发布地址，进入等待订阅列表
-                NodeList.dicWaitSubscribe[topic] = null;
+                 NodeList.dicWaitSubscribe[topic] = null;
                 //
+              
             }
            if(!isSucess)
             {
-                //订阅全部没有成功
+                //订阅全部没有成功;必须有一个订阅才能复制
                 NodeList.dicWaitSubscribe[topic] = null;
                 string t;
                 dicFilter.TryRemove(topic,out t);
@@ -176,15 +141,83 @@ namespace ObserverNet
         }
 
         /// <summary>
+        /// 直接发送订阅信息
+        /// </summary>
+        /// <param name="topic"></param>
+        /// <param name="addr"></param>
+        /// <returns></returns>
+        public  bool SendSubscribeTopic(string topic,AddressInfo addr)
+        {
+
+            bool isSucess = false;
+            var local = new AddressInfo();
+            local.Reset(LocalNode.TopicAddress);
+            byte[] tmp = DataPack.PackSubscribeMsg(topic, new AddressInfo[] { local });
+            if (addr.Protol == 0)
+            {
+                TcpClientSocket tcp = new TcpClientSocket();
+                tcp.RemoteHost = addr.Address;
+                tcp.RemotePort = addr.Port;
+                if (tcp.Connect())
+                {
+                    tcp.Send(tmp);
+                    isSucess = true;
+                }
+                tcp.Close();
+            }
+            else
+            {
+               
+                UDPSocketPack uDP = new UDPSocketPack();
+                int num = udpTimes;
+                while (true)
+                {
+                    uDP.Send(addr.Address, addr.Port, tmp);
+                    byte[] buf = new byte[1024];
+                    Debug.WriteLine("发送订阅信息:" + addr.ToString());
+                    var tsk = Task.Factory.StartNew(() =>
+                    {
+                        return uDP.Recvice(buf);//只要有接收就确定收到
+                    });
+                    if (tsk.Wait(udpWait))
+                    {
+                        isSucess = true;
+                        break;
+                    }
+                    num--;
+                    if (num < 0)
+                    {
+                        break;
+                    }
+                }
+
+            }
+            return isSucess;
+        }
+      
+        /// <summary>
         /// 新增主题时再次订阅
         /// </summary>
         /// <param name="topic"></param>
-        public void NewTopicRec(string topic)
+        public void NewTopicRec(string topic,AddressInfo[] addresses)
         {
-            if (NodeList.dicWaitSubscribe.ContainsKey(topic))
+            
+            if(dicSubscriber.ContainsKey(topic))
             {
-                //再次进入订阅
-                SendSubscriber(topic);
+                //有订阅，优先订阅等待队列
+                if (NodeList.dicWaitSubscribe.ContainsKey(topic))
+                {
+                    //再次进入订阅,把每个发布列表订阅一遍
+                    SendSubscriber(topic);
+                }
+                else
+                {
+                    //直接订阅该主题
+                    foreach (var addr in addresses)
+                    {
+                        SendSubscribeTopic(topic, addr);
+                    }
+                }
             }
         }
     
@@ -202,6 +235,9 @@ namespace ObserverNet
             ThreadQueue();
         }
 
+        /// <summary>
+        /// 开启线程处数据
+        /// </summary>
         private void ThreadQueue()
         {
             isRun = true;
@@ -215,9 +251,12 @@ namespace ObserverNet
                     {
                         if (dicSubscriber.TryGetValue(data.TopicName, out lst))
                         {
-                            for (int i = 0; i < lst.Count; i++)
+                            lock (lst)
                             {
-                                lst[i].Call(data.TopicName, data.Data);
+                                for (int i = 0; i < lst.Count; i++)
+                                {
+                                    lst[i].Call(data.TopicName, data.Data);
+                                }
                             }
                         }
                     }

@@ -34,6 +34,7 @@ namespace ObserverNet
     public class Subscriber
     {
         public CallBackTopic Call;
+
         public void Subscribe(string topic)
         {
             if (ObserverInit.isInit)

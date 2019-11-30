@@ -21,6 +21,7 @@
 
 
 using System;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -161,6 +162,7 @@ namespace ObserverNet
             AddressInfo address = new AddressInfo();
             address.Reset(msg.Address);
             SubscribeList.Subscribe.AddAddress(msg.TopicName, new AddressInfo[] { address });
+            Debug.WriteLine("接收订阅信息:" + msg.TopicName + "," + msg.Address);
         }
 
         /// <summary>

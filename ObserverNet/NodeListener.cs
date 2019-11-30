@@ -24,6 +24,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace ObserverNet
 {
@@ -61,6 +62,7 @@ namespace ObserverNet
 
                 if (lst.Count > NodeList.LstNodeInfo.Count / 2)
                 {
+                    dicRec.TryRemove(topic, out lst);//无用了
                     return true;
                 }
 
@@ -127,13 +129,14 @@ namespace ObserverNet
         private void ProcessNewToic(byte[]data,int len)
         {
             var msg = DataPack.UnPackNewTopic(data,len);
-            //添加本地
+            //添加到本地
             AddressInfo info = new AddressInfo();
             info.Reset(msg.Address);
-            PublishList.Publish.AddNode(msg.TopicName,new AddressInfo[] { info });
-            SubscribeMgr.Instance.NewTopicRec(msg.TopicName);
-
+            Debug.WriteLine("接收,ProcessNewToic:" + msg.Address);
+            var lst=PublishList.Publish.AddNode(msg.TopicName,new AddressInfo[] { info });
+            SubscribeMgr.Instance.NewTopicRec(msg.TopicName,lst.ToArray());//订阅
             multicast.SendTo(DataPack.PackNewTopicRsp(msg.TopicName, LocalNode.NodeId, LocalNode.TopicAddress));
+            
 
         }
 
@@ -159,23 +162,25 @@ namespace ObserverNet
             NodeList.UpdateListCurrentID = curID;//更新轮训节点
             //添加本地
             List<string> lstNew = new List<string>();
+            Dictionary<string, List<AddressInfo>> dicNew = new Dictionary<string, List<AddressInfo>>();
             foreach(var kv in dic)
             {
-               bool isAdd= PublishList.Publish.AddNode(kv.Key, kv.Value.ToArray());
-                if (isAdd)
+                string addr = null;
+                foreach (var r in kv.Value)
                 {
-                    lstNew.Add(kv.Key);
+                    addr += (r + ",");
                 }
+                Debug.WriteLine("ProcessPubLisUpdate:" + addr);
+               var lst= PublishList.Publish.AddNode(kv.Key, kv.Value.ToArray());
+                dicNew[kv.Key] = lst;
             }
-            foreach(var topic in lstNew)
+
+            //如果有发布地址新增主题，查看是否需要订阅
+           foreach(var kv in dicNew)
             {
-                //如果有发布地址新增主题，查看是否正在等待订阅
-                if (NodeList.dicWaitSubscribe.ContainsKey(topic))
-                {
-                    //再次订阅
-                    SubscribeMgr.Instance.NewTopicRec(topic);
-                }
+                SubscribeMgr.Instance.NewTopicRec(kv.Key, kv.Value.ToArray());
             }
+           
            if(PublishList.Publish.IsUpdate)
             {
                 //如果发布列表有修改不一致，立即触发全网节点更新，但不影响正常的更新顺序
@@ -203,22 +208,28 @@ namespace ObserverNet
             }
       
             //添加本地
-            List<string> lstNew = new List<string>();
+        
+            Dictionary<string, List<AddressInfo>> dicNew = new Dictionary<string, List<AddressInfo>>();
             foreach (var kv in dic)
             {
-                bool isAdd = PublishList.Publish.AddNode(kv.Key, kv.Value.ToArray());
-                if (isAdd)
+                string addr = null;
+               foreach(var r in kv.Value)
                 {
-                    lstNew.Add(kv.Key);
+                    addr += (r + ",");
                 }
+                Debug.WriteLine("ProcessTriggerPubLisUpdate:" + addr);
+                var lst = PublishList.Publish.AddNode(kv.Key, kv.Value.ToArray());
+                dicNew[kv.Key] = lst;
+
+
             }
-            foreach (var topic in lstNew)
+            foreach (var topic in dicNew)
             {
-                //如果有发布地址新增主题，查看是否正在等待订阅
-                if (NodeList.dicWaitSubscribe.ContainsKey(topic))
+                
+                //如果有发布地址新增主题，查看是否需要订阅
+                foreach (var kv in dicNew)
                 {
-                    //再次订阅
-                    SubscribeMgr.Instance.NewTopicRec(topic);
+                    SubscribeMgr.Instance.NewTopicRec(kv.Key, kv.Value.ToArray());
                 }
             }
            

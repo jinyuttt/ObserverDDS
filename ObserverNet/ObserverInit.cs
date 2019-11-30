@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace ObserverNet
@@ -51,7 +52,7 @@ namespace ObserverNet
                 LocalNode.InfoUdp.Reset("1_" + SubscribeMessage.Instance.UdpAddress);
                 LocalNode.TopicAddress = LocalNode.InfoUdp.ToString();
                 NodeTimer.Instance.SendReg();
-                Console.WriteLine(LocalNode.NodeId + ";" + LocalNode.InfoUdp + ";" + LocalNode.InfoTcp);
+                Debug.WriteLine(LocalNode.NodeId + ";" + LocalNode.InfoUdp + ";" + LocalNode.InfoTcp);
                 isInit = false;
             }
          

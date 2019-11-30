@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Study\\ObserverNet\\ObserverNet\\ObserverNet.csproj": {}
+    "E:\\Study\\net\\ObserverNet\\ObserverNet\\ObserverNet.csproj": {}
   },
   "projects": {
-    "E:\\Study\\ObserverNet\\ObserverNet\\ObserverNet.csproj": {
+    "E:\\Study\\net\\ObserverNet\\ObserverNet\\ObserverNet.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Study\\ObserverNet\\ObserverNet\\ObserverNet.csproj",
+        "projectUniqueName": "E:\\Study\\net\\ObserverNet\\ObserverNet\\ObserverNet.csproj",
         "projectName": "ObserverNet",
-        "projectPath": "E:\\Study\\ObserverNet\\ObserverNet\\ObserverNet.csproj",
+        "projectPath": "E:\\Study\\net\\ObserverNet\\ObserverNet\\ObserverNet.csproj",
         "packagesPath": "C:\\Users\\jinyu\\.nuget\\packages\\",
-        "outputPath": "E:\\Study\\ObserverNet\\ObserverNet\\obj\\",
+        "outputPath": "E:\\Study\\net\\ObserverNet\\ObserverNet\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jinyu\\AppData\\Roaming\\NuGet\\NuGet.Config",

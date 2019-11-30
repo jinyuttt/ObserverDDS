@@ -69,8 +69,8 @@ namespace ObserverNet
         public static TopicMessage UnPackNewTopic(byte[]data,int count)
         {
             TopicMessage message = new TopicMessage();
-            byte[] tmp = new byte[data.Length - 1];
-            Array.Copy(data, 1, tmp,0, data.Length - 1);
+            byte[] tmp = new byte[count-1];//除去数据标识
+            Array.Copy(data, 1, tmp,0, tmp.Length);
             Span<byte> bytes = tmp;
             var lenSP=  bytes.Slice(0, 4);
             int len = BitConverter.ToInt32(lenSP.ToArray(), 0);
@@ -80,7 +80,7 @@ namespace ObserverNet
             string topic = Encoding.Default.GetString(lenSP.ToArray());
             lenSP = bytes.Slice(8+ topicLen, 8);
            long id= BitConverter.ToInt32(lenSP.ToArray(), 0);
-            lenSP = bytes.Slice(16 + topicLen, count - 16- topicLen);
+            lenSP = bytes.Slice(16 + topicLen, count-1 - 16- topicLen);
             string addr= Encoding.Default.GetString(lenSP.ToArray());
             message.Address = addr;
             message.NodeId = id;
@@ -255,7 +255,7 @@ namespace ObserverNet
             byte[] tmp = new byte[1024];
             Dictionary<string, List<AddressInfo>> dic = new Dictionary<string, List<AddressInfo>>();
             MemoryStream memory = new MemoryStream(data);
-            memory.ReadByte();
+            memory.ReadByte();//去除标识
 
             List<AddressInfo> lst = null;
             byte[] bufID = new byte[8];
@@ -397,8 +397,8 @@ namespace ObserverNet
         public static TopicMessage UnPackNewTopicRsp(byte[] data, int count)
         {
             TopicMessage message = new TopicMessage();
-            byte[] tmp = new byte[data.Length - 1];
-            Array.Copy(data, 1, tmp, 0, data.Length - 1);
+            byte[] tmp = new byte[count - 1];
+            Array.Copy(data, 1, tmp, 0, tmp.Length);
             Span<byte> bytes = tmp;
             var lenSP = bytes.Slice(0, 4);
             int len = BitConverter.ToInt32(lenSP.ToArray(), 0);
@@ -408,7 +408,7 @@ namespace ObserverNet
             string topic = Encoding.Default.GetString(lenSP.ToArray());
             lenSP = bytes.Slice(8 + topicLen, 8);
             long id = BitConverter.ToInt32(lenSP.ToArray(), 0);
-            lenSP = bytes.Slice(16 + topicLen, count - 16 - topicLen);
+            lenSP = bytes.Slice(16 + topicLen, count-1 - 16 - topicLen);
             string addr = Encoding.Default.GetString(lenSP.ToArray());
             message.Address = addr;
             message.NodeId = id;
@@ -453,7 +453,7 @@ namespace ObserverNet
             byte[] tmp = new byte[1024];
             Dictionary<string, List<AddressInfo>> dic = new Dictionary<string, List<AddressInfo>>();
             MemoryStream memory = new MemoryStream(data);
-            memory.ReadByte();
+            memory.ReadByte();//去除标识
 
             List<AddressInfo> lst = null;
             byte[] bufID = new byte[8];

@@ -81,5 +81,11 @@ namespace ObserverNet
             
             );
         }
+
+        public void Close()
+        {
+            dic.Clear();
+
+        }
     }
 }

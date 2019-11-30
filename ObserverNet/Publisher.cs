@@ -23,14 +23,24 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Threading;
+
 namespace ObserverNet
 {
     public  class Publisher
     {
+        readonly ConcurrentDictionary<string, UDPSocketPack> dicReq = new ConcurrentDictionary<string, UDPSocketPack>();
 
-        ConcurrentDictionary<string, UDPSocketPack> dicReq = new ConcurrentDictionary<string, UDPSocketPack>();
-        ConcurrentDictionary<UDPSocketPack, string> dicReqTopic = new ConcurrentDictionary<UDPSocketPack, string>();
+        readonly ConcurrentDictionary<UDPSocketPack, string> dicReqTopic = new ConcurrentDictionary<UDPSocketPack, string>();
+
+        /// <summary>
+        /// 用于发布的socket
+        /// </summary>
+        BlockingCollection<UDPSocketPack> udpSocket = new BlockingCollection<UDPSocketPack>(System.Environment.ProcessorCount/2);
+        private  int UdpSocketNum = System.Environment.ProcessorCount/2;
+
         private static readonly Lazy<Publisher> obj = new Lazy<Publisher>();
+
         public static Publisher Instance
         {
             get { return obj.Value; }
@@ -126,26 +136,25 @@ namespace ObserverNet
          
             UDPSocketPack uDP = new UDPSocketPack();
             uDP= dicReq.GetOrAdd(topic,  uDP);
+            dicReqTopic[uDP] = topic;
             uDP.UDPCall -= UDP_UDPCall;
             uDP.UDPCall += UDP_UDPCall;
             uDP.Send(p.Address, p.Port, bytes);
-
-            
-            dicReqTopic[uDP] = topic;
         }
 
         private void UDP_UDPCall(object sender, byte[] data, SocketRsp rsp)
         {
+            string topic;
             UDPSocketPack uDP = sender as UDPSocketPack;
-            var  lst = DataPack.UnPackCopyRspTopic(data);
-            string topic = dicReqTopic[uDP];
-            SubscribeList.Subscribe.AddAddress(topic, lst.ToArray());
+            if (dicReqTopic.TryRemove(uDP, out topic))
+            {
+                var lst = DataPack.UnPackCopyRspTopic(data);
+               
+                SubscribeList.Subscribe.AddAddress(topic, lst.ToArray());
 
-            dicReqTopic.TryRemove(uDP, out topic);
-            dicReq.TryRemove(topic,out uDP);
-            uDP.Close();
-
-
+                dicReq.TryRemove(topic, out uDP);
+                uDP.Close();
+            }
         }
 
         //private void OldCopy()
@@ -207,9 +216,30 @@ namespace ObserverNet
                 else
                 {
                     //  UDPSocket uDP = new UDPSocket();
-                    UDPSocketPack uDP = new UDPSocketPack();
-                    uDP.Send(p.Address, p.Port, bytes);
-                 
+                    UDPSocketPack uDP = null;
+
+                    if (udpSocket.TryTake(out uDP))
+                    {
+                        uDP.Send(p.Address, p.Port, bytes);
+                    }
+                    else
+                    {
+                        if (Interlocked.Decrement(ref UdpSocketNum) > 0)
+                        {
+                            uDP = new UDPSocketPack();
+                            uDP.Send(p.Address, p.Port, bytes);
+                        }
+                        else
+                        {
+                            uDP= udpSocket.Take();
+                            uDP.Send(p.Address, p.Port, bytes);
+                        }
+                    }
+                    if(!udpSocket.TryAdd(uDP))
+                    {
+                        uDP.Stop();
+                    }
+                   
                 }
             }
         }

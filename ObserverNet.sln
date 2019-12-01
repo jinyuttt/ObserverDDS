@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29503.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObserverNet", "ObserverNet\ObserverNet.csproj", "{30815E8F-37CC-439F-9ADD-757B1ADC24C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObserverDDS", "ObserverNet\ObserverDDS.csproj", "{30815E8F-37CC-439F-9ADD-757B1ADC24C9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{B9C7B0A6-834B-4EC5-A804-A9D9BE732A49}"
 EndProject

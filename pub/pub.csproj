@@ -51,9 +51,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ObserverNet\ObserverNet.csproj">
+    <ProjectReference Include="..\ObserverNet\ObserverDDS.csproj">
       <Project>{30815e8f-37cc-439f-9add-757b1adc24c9}</Project>
-      <Name>ObserverNet</Name>
+      <Name>ObserverDDS</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

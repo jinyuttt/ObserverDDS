@@ -1,11 +1,11 @@
 ﻿#region << 版 本 注 释 >>
 /*----------------------------------------------------------------
-* 项目名称 ：ObserverNet.Net
+* 项目名称 ：ObserverDDS.Net
 * 项目描述 ：
 * 类 名 称 ：SessionPackage
 * 类 描 述 ：
 * 所在的域 ：DESKTOP-1IBOINI
-* 命名空间 ：ObserverNet.Net
+* 命名空间 ：ObserverDDS.Net
 * 机器名称 ：DESKTOP-1IBOINI 
 * CLR 版本 ：4.0.30319.42000
 * 作    者 ：jinyu
@@ -24,7 +24,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace ObserverNet
+namespace ObserverDDS
 {
     public class PointPackage
     {

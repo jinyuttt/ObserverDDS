@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ObserverNet
+namespace ObserverDDS
 {
     /// <summary>
     /// 接收数据处理

@@ -5,7 +5,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 
-namespace ObserverNet
+namespace ObserverDDS
 {
   public  class NetAddress
     {

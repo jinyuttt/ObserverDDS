@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 
-namespace ObserverNet
+namespace ObserverDDS
 {
     //包数+ID+序号+数据
     public  class UDPPack

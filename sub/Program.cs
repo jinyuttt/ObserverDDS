@@ -10,7 +10,7 @@ namespace sub
     {
         static void Main(string[] args)
         {
-            ObserverNet.NetSubscriber netSubscriber = new ObserverNet.NetSubscriber();
+            ObserverDDS.NetSubscriber netSubscriber = new ObserverDDS.NetSubscriber();
             netSubscriber.Subscribe("test");
             netSubscriber.CallBack += NetSubscriber_CallBack;
             Console.Read();

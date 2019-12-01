@@ -1,11 +1,11 @@
 ﻿#region << 版 本 注 释 >>
 /*----------------------------------------------------------------
-* 项目名称 ：ObserverNet
+* 项目名称 ：ObserverDDS
 * 项目描述 ：
 * 类 名 称 ：UDPPackProcess
 * 类 描 述 ：
 * 所在的域 ：DESKTOP-1IBOINI
-* 命名空间 ：ObserverNet
+* 命名空间 ：ObserverDDS
 * 机器名称 ：DESKTOP-1IBOINI 
 * CLR 版本 ：4.0.30319.42000
 * 作    者 ：jinyu
@@ -27,7 +27,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ObserverNet
+namespace ObserverDDS
 {
 
     /// <summary>

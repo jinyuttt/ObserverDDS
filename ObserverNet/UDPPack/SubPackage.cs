@@ -1,4 +1,4 @@
-﻿namespace ObserverNet
+﻿namespace ObserverDDS
 {
 
     /// <summary>

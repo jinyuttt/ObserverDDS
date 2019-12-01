@@ -11,10 +11,11 @@ namespace pub
     {
         static void Main(string[] args)
         {
-            ObserverNet.NetPublisher publisher = new ObserverNet.NetPublisher();
+            ObserverDDS.NetPublisher publisher = new ObserverDDS.NetPublisher();
+            string str = DateTime.Now.Second.ToString();
             while(true)
             {
-                publisher.Publish("test", Encoding.Default.GetBytes(DateTime.Now.ToString()));
+                publisher.Publish("test", Encoding.Default.GetBytes(str+"_"+DateTime.Now.ToString()));
                 Thread.Sleep(100);
             }
         }

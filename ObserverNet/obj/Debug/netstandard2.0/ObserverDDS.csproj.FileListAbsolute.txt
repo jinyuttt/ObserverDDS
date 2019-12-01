@@ -5,3 +5,4 @@ E:\Study\net\ObserverNet\ObserverNet\bin\Debug\netstandard2.0\ObserverDDS.dll
 E:\Study\net\ObserverNet\ObserverNet\bin\Debug\netstandard2.0\ObserverDDS.pdb
 E:\Study\net\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverDDS.dll
 E:\Study\net\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverDDS.pdb
+E:\Study\net\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverDDS.csprojAssemblyReference.cache

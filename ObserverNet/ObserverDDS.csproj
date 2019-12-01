@@ -6,6 +6,7 @@
     <Authors>jason</Authors>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>以组播为节点寻找，创建订阅发布</Description>
+    <PackageIconUrl>https://github.com/jinyuttt/ObserverDDS/blob/udp/logo.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>

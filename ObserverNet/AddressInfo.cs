@@ -26,6 +26,10 @@ using System.Text;
 
 namespace ObserverDDS
 {
+
+    /// <summary>
+    /// 地址信息
+    /// </summary>
   public  class AddressInfo
     {
         /// <summary>
@@ -72,6 +76,10 @@ namespace ObserverDDS
                 return true;
             }
             return false;
+        }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

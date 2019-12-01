@@ -21,6 +21,7 @@
 
 
 using System;
+using System.Diagnostics;
 using System.Net.Sockets;
 
 namespace ObserverDDS
@@ -43,6 +44,7 @@ namespace ObserverDDS
             }
             catch(Exception ex)
             {
+                Debug.WriteLine(ex);
                 return false;
             }
         }

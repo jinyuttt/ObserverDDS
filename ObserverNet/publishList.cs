@@ -95,11 +95,9 @@ namespace ObserverDDS
             List<AddressInfo> bag = new List<AddressInfo>();
             bag = dicList.GetOrAdd(topic, bag);
             lock (bag)
-<<<<<<< HEAD
             {
                 foreach (var addr in addresses)
-=======
->>>>>>> d5bc357b7e7c3f0d55913f2f840bfe3c8ce088f8
+
                 {
                     if (!bag.Contains(addr))
                     {

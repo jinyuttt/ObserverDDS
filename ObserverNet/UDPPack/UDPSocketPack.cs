@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Generic;
 using System;
+using System.Diagnostics;
 
 namespace ObserverDDS
 {
@@ -152,6 +153,7 @@ namespace ObserverDDS
                     }
                     catch (SocketException ex)
                     {
+                        Debug.WriteLine(ex);
                         break;
                     }
                     IPEndPoint iP = (IPEndPoint)point;
@@ -237,10 +239,12 @@ namespace ObserverDDS
                         }
                         catch(SocketException ex)
                         {
+                            Debug.WriteLine(ex);
                             break;
                         }
                         catch(ObjectDisposedException ex)
                         {
+                            Debug.WriteLine(ex);
                             this.sendQueue.Clear();
                             
                             this.recsession.Close();

@@ -27,6 +27,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace ObserverDDS
 {
@@ -108,23 +109,19 @@ namespace ObserverDDS
         private void Receive(object obj)
         {
             Socket socketSend = obj as Socket;
-            int r = 0;
             while (true)
             {
-                //客户端连接成功后，服务器接收客户端发送的消息
-                //byte[] buffer = new byte[2048];
-                //实际接收到的有效字节数
-                int len = 0;
-                byte[] bufLen = null;
+                byte[] bufLen;
                 if (poolLen.TryDequeue(out bufLen))
                 {
-                    int count = 0;
+                    int count;
                     try
                     {
                         count= socketSend.Receive(bufLen);
                     }
                     catch(SocketException ex)
                     {
+                        Debug.WriteLine(ex);
                         poolLen.Enqueue(bufLen);
                         break;
                     }
@@ -134,12 +131,15 @@ namespace ObserverDDS
                     }
                     else
                     {
-                        len = BitConverter.ToInt32(bufLen, 0);
-                         byte[] buf = poolData.Rent(len);
-                      
-                            r = socketSend.Receive(buf);
+                        //客户端连接成功后，服务器接收客户端发送的消息
+                        //byte[] buffer = new byte[2048];
+                        //实际接收到的有效字节数
+                        int len = BitConverter.ToInt32(bufLen, 0);
+                        byte[] buf = poolData.Rent(len);
 
-                        
+                        int r = socketSend.Receive(buf);
+
+
                         CallSrv(poolData, buf, r, new SocketRsp() { Rsp = socketSend });
 
                     }

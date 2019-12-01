@@ -1,3 +1,7 @@
-E:\Study\net\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverDDS.csprojAssemblyReference.cache
 E:\Study\net\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverDDS.AssemblyInfoInputs.cache
 E:\Study\net\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverDDS.AssemblyInfo.cs
+E:\Study\net\ObserverNet\ObserverNet\bin\Debug\netstandard2.0\ObserverDDS.deps.json
+E:\Study\net\ObserverNet\ObserverNet\bin\Debug\netstandard2.0\ObserverDDS.dll
+E:\Study\net\ObserverNet\ObserverNet\bin\Debug\netstandard2.0\ObserverDDS.pdb
+E:\Study\net\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverDDS.dll
+E:\Study\net\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverDDS.pdb

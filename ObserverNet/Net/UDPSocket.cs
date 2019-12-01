@@ -79,6 +79,7 @@
 //            }
 //        }
 
+<<<<<<< HEAD
 //        /// <summary>
 //        /// 
 //        /// </summary>
@@ -96,6 +97,51 @@
 //                    UDPCall(poolData, buf,r,new SocketRsp() { Address = iP.Address.ToString(), Port = iP.Port });
               
 //            }
+=======
+        /// <summary>
+        /// 绑定
+        /// </summary>
+        /// <param name="port"></param>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        public bool Bind(int port=0, string host=null)
+        {
+            try
+            {
+                host = NetAddress.GetLocalIP();
+                if (string.IsNullOrEmpty(host))
+                {
+                    socket.Bind(new IPEndPoint(IPAddress.Any, port));
+                }
+                else
+                {
+                    socket.Bind(new IPEndPoint(IPAddress.Parse(host), port));
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void StartRecvice()
+        {
+            poolData = ArrayPool<byte>.Create(1024 * 1024, 100);
+            EndPoint point = new IPEndPoint(IPAddress.Any,0);
+            int r = 0;
+            while (true)
+            {
+                byte[] buf = poolLen.Rent(1024);
+                r = socket.ReceiveFrom(buf, ref point);
+                IPEndPoint iP = (IPEndPoint)point;
+                UDPCall(poolData, buf, r, new SocketRsp() { Address = iP.Address.ToString(), Port = iP.Port });
+
+            }
+>>>>>>> d5bc357b7e7c3f0d55913f2f840bfe3c8ce088f8
 
 //        }
 

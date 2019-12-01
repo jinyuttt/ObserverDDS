@@ -5,6 +5,7 @@ E:\Study\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.AssemblyIn
 E:\Study\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.AssemblyInfo.cs
 E:\Study\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.dll
 E:\Study\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.pdb
+<<<<<<< HEAD
 E:\Study\net\ObserverNet\ObserverNet\bin\Debug\netstandard2.0\ObserverNet.deps.json
 E:\Study\net\ObserverNet\ObserverNet\bin\Debug\netstandard2.0\ObserverNet.dll
 E:\Study\net\ObserverNet\ObserverNet\bin\Debug\netstandard2.0\ObserverNet.pdb
@@ -12,3 +13,6 @@ E:\Study\net\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.Assemb
 E:\Study\net\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.AssemblyInfo.cs
 E:\Study\net\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.dll
 E:\Study\net\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.pdb
+=======
+E:\Study\net\ObserverNet\ObserverNet\obj\Debug\netstandard2.0\ObserverNet.csprojAssemblyReference.cache
+>>>>>>> d5bc357b7e7c3f0d55913f2f840bfe3c8ce088f8

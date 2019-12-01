@@ -346,9 +346,15 @@
   "project": {
     "version": "1.0.0",
     "restore": {
+<<<<<<< HEAD
       "projectUniqueName": "E:\\Study\\net\\ObserverNet\\ObserverNet\\ObserverDDS.csproj",
       "projectName": "ObserverDDS",
       "projectPath": "E:\\Study\\net\\ObserverNet\\ObserverNet\\ObserverDDS.csproj",
+=======
+      "projectUniqueName": "E:\\Study\\net\\ObserverNet\\ObserverNet\\ObserverNet.csproj",
+      "projectName": "ObserverNet",
+      "projectPath": "E:\\Study\\net\\ObserverNet\\ObserverNet\\ObserverNet.csproj",
+>>>>>>> d5bc357b7e7c3f0d55913f2f840bfe3c8ce088f8
       "packagesPath": "C:\\Users\\jinyu\\.nuget\\packages\\",
       "outputPath": "E:\\Study\\net\\ObserverNet\\ObserverNet\\obj\\",
       "projectStyle": "PackageReference",

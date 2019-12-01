@@ -26,6 +26,10 @@ using System.Text;
 
 namespace ObserverDDS
 {
+
+   /// <summary>
+   /// 发布器
+   /// </summary>
   public  class NetPublisher
     {
         private readonly Publisher publisher = null;
@@ -40,6 +44,11 @@ namespace ObserverDDS
             publisher = new Publisher();
         }
 
+        /// <summary>
+        /// 发布数据
+        /// </summary>
+        /// <param name="topic">主题</param>
+        /// <param name="data">数据</param>
         public   void Publish(string topic,byte[]data)
         {
             publisher.Publish(topic, data);

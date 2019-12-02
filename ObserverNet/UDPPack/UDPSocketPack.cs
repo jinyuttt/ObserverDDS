@@ -191,6 +191,10 @@ namespace ObserverDDS
                     if (recQueue.TryDequeue(out buffer))
                     {
                        var p= UDPPack.UnPack(buffer.Data, buffer.Len);
+                        if(p.PackNum==0)
+                        {
+                            continue;
+                        }
                         if(p.DataType==1)
                         {
                             if(sendQueue.TryGetValue(p.SessionId,out package))

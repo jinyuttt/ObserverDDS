@@ -23,6 +23,7 @@
 using System;
 using System.Diagnostics;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ObserverDDS
@@ -64,10 +65,17 @@ namespace ObserverDDS
                 uDP.Bind();
                 // uDP.UDPCall += UDP_UDPCall;
                 uDP.UDPCall += UDP_UDPCall1;
-                Task.Factory.StartNew(() =>
+                Thread udprec=new Thread(() =>
                 {
                     uDP.StartRecvice();
                 });
+                udprec.IsBackground = true;
+                udprec.Name = "udpRec";
+                
+                if(!udprec.IsAlive)
+                {
+                    udprec.Start();
+                }
                 tcp.Bind();
                 tcp.CallSrv += Tcp_CallSrv;
 
@@ -162,7 +170,7 @@ namespace ObserverDDS
             AddressInfo address = new AddressInfo();
             address.Reset(msg.Address);
             SubscribeList.Subscribe.AddAddress(msg.TopicName, new AddressInfo[] { address });
-            Debug.WriteLine("接收订阅信息:" + msg.TopicName + "," + msg.Address);
+            Console.WriteLine("接收订阅信息:" + msg.TopicName + "," + msg.Address);
         }
 
         /// <summary>

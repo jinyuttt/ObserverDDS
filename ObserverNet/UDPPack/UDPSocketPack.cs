@@ -138,34 +138,42 @@ namespace ObserverDDS
         /// </summary>
         public void StartRecvice()
         {
-          
+            isRecStop = false;
             EndPoint point = new IPEndPoint(IPAddress.Any, 0);
-            Task.Factory.StartNew(() =>
-            {
-                int len = 0;
-                while (isRun)
-                {
+            Thread udprec = new Thread(() =>
+               {
+                   int len = 0;
+                   while (isRun)
+                   {
 
-                    byte[] buf = new byte[UDPPack.PackSize];
-                    try
-                    {
-                        len = socket.ReceiveFrom(buf, ref point);
-                    }
-                    catch (SocketException ex)
-                    {
-                        Debug.WriteLine(ex);
-                        break;
-                    }
-                    IPEndPoint iP = (IPEndPoint)point;
-                    recQueue.Enqueue(new RecviceBuffer() { Point = iP, Data = buf, Len = len });
-                    if (isProcessRecStop)
-                    {
-                        isProcessRecStop = false;
-                        ProcessRecvice();
-                    }
-                }
-            });
-           
+                       byte[] buf = new byte[UDPPack.PackSize];
+                       try
+                       {
+                           len = socket.ReceiveFrom(buf, ref point);
+                       }
+                       catch (SocketException ex)
+                       {
+                           Debug.WriteLine(ex);
+                         
+                       }
+                       IPEndPoint iP = (IPEndPoint)point;
+                       recQueue.Enqueue(new RecviceBuffer() { Point = iP, Data = buf, Len = len });
+                       if (isProcessRecStop)
+                       {
+                           isProcessRecStop = false;
+                           ProcessRecvice();
+                       }
+                   }
+                   isRecStop = true;
+               })
+            {
+                IsBackground = true,
+                Name = "udpRec"
+            };
+            if (!udprec.IsAlive)
+            {
+                udprec.Start();
+            }
 
         }
 

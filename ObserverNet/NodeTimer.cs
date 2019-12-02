@@ -57,14 +57,16 @@ namespace ObserverDDS
         public void Start()
         {
           
-            Task.Factory.StartNew(() =>
+            Thread timer=new Thread(() =>
             {
                 Thread.Sleep(WaitTime);
                 UpdateList();
                 Heart();
                 Start();
             });
-          
+            timer.IsBackground = true;
+            timer.Name = "NodeTimer";
+            timer.Start();
 
         }
         

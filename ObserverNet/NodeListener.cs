@@ -135,9 +135,12 @@ namespace ObserverDDS
             Debug.WriteLine("接收,ProcessNewToic:" + msg.Address);
             var lst=PublishList.Publish.AddNode(msg.TopicName,new AddressInfo[] { info });
             SubscribeMgr.Instance.NewTopicRec(msg.TopicName,lst.ToArray());//订阅
-            multicast.SendTo(DataPack.PackNewTopicRsp(msg.TopicName, LocalNode.NodeId, LocalNode.TopicAddress));
-            
-
+            if (!string.IsNullOrEmpty(LocalNode.TopicAddress))
+            {
+                //还没有完成初始化就不会返回
+                multicast.SendTo(DataPack.PackNewTopicRsp(msg.TopicName, LocalNode.NodeId, LocalNode.TopicAddress));
+            }
+           
         }
 
         /// <summary>

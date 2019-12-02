@@ -40,10 +40,12 @@ namespace ObserverDDS
                 {
                     return;
                 }
+                //开启网络
                 NodeListener.Instance.StartRecvice();
                 SubscribeMessage.Instance.Init();
                 NodeTimer.Instance.Start();
                
+                //初始化注册
                 Random random = new Random(DateTime.Now.Millisecond);
                 LocalNode.NodeId = random.Next();
                 LocalNode.InfoTcp = new AddressInfo();
@@ -52,7 +54,8 @@ namespace ObserverDDS
                 LocalNode.InfoUdp.Reset("1_" + SubscribeMessage.Instance.UdpAddress);
                 LocalNode.TopicAddress = LocalNode.InfoUdp.ToString();
                 NodeTimer.Instance.SendReg();
-                Debug.WriteLine(LocalNode.NodeId + ";" + LocalNode.InfoUdp + ";" + LocalNode.InfoTcp);
+
+                Console.WriteLine(LocalNode.NodeId + ";" + LocalNode.InfoUdp + ";" + LocalNode.InfoTcp);
                 isInit = false;
             }
          

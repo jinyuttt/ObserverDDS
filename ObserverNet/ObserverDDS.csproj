@@ -7,12 +7,10 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>以组播为节点寻找，创建订阅发布</Description>
     <PackageIconUrl>https://github.com/jinyuttt/ObserverDDS/blob/udp/logo.png</PackageIconUrl>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Pipe\**" />
-    <EmbeddedResource Remove="Pipe\**" />
-    <None Remove="Pipe\**" />
     <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

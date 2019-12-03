@@ -1,14 +1,13 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 
 namespace ObserverDDS
 {
     //包数+ID+序号+数据
     public  class UDPPack
     {
-        private const int Size = 1475-13;
-        public const int PackSize = 1475;
+        private const int Size = 1472-13;
+        public const int PackSize = 1472;
      
 
         

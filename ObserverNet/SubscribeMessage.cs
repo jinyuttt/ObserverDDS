@@ -28,6 +28,10 @@ using System.Threading.Tasks;
 
 namespace ObserverDDS
 {
+
+    /// <summary>
+    /// 订阅端接收
+    /// </summary>
     public  class SubscribeMessage
     {
         private static readonly Lazy<SubscribeMessage> obj = new Lazy<SubscribeMessage>();

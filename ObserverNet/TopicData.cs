@@ -26,6 +26,10 @@ using System.Text;
 
 namespace ObserverDDS
 {
+
+    /// <summary>
+    /// 主题数据
+    /// </summary>
   public  class TopicData
     {
         public string TopicName { get; set; }

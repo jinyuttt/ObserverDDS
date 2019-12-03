@@ -2,7 +2,7 @@
 /*----------------------------------------------------------------
 * 项目名称 ：ObserverDDS
 * 项目描述 ：
-* 类 名 称 ：Channel
+* 类 名 称 ：RspBuffer
 * 类 描 述 ：
 * 所在的域 ：DESKTOP-1IBOINI
 * 命名空间 ：ObserverDDS
@@ -20,13 +20,16 @@
 
 
 
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Net;
 
 namespace ObserverDDS
 {
-    class Channel
+   /// <summary>
+   ///  接收数据协议
+   /// </summary>
+    public  class RspBuffer
     {
+        public IPEndPoint Point { get; set; }
+        public SubPackage Package { get; set; }
     }
 }

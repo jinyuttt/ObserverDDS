@@ -28,6 +28,10 @@ using System.Diagnostics;
 
 namespace ObserverDDS
 {
+
+    /// <summary>
+    /// 订阅管理
+    /// </summary>
     public  class SubscribeMgr
     {
         private static readonly Lazy<SubscribeMgr> obj = new Lazy<SubscribeMgr>();

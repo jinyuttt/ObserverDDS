@@ -27,6 +27,10 @@ using System.Threading;
 
 namespace ObserverDDS
 {
+
+    /// <summary>
+    /// 数据发布
+    /// </summary>
     public  class Publisher
     {
         readonly ConcurrentDictionary<string, UDPSocketPack> dicReq = new ConcurrentDictionary<string, UDPSocketPack>();

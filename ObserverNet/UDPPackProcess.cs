@@ -23,9 +23,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace ObserverDDS
 {
@@ -33,7 +31,7 @@ namespace ObserverDDS
     /// <summary>
     /// 管理公共资源
     /// </summary>
-  public  class UDPPackProcess
+    public  class UDPPackProcess
     {
         private static Lazy<UDPPackProcess> Obj = new Lazy<UDPPackProcess>();
 
@@ -55,6 +53,9 @@ namespace ObserverDDS
             Timer();
         }
 
+        /// <summary>
+        /// 定时监测无效数据
+        /// </summary>
         private void Timer()
         {
 

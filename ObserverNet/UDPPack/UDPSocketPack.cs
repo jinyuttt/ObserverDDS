@@ -134,7 +134,7 @@ namespace ObserverDDS
         }
 
         /// <summary>
-        /// 
+        /// 启动接收
         /// </summary>
         public void StartRecvice()
         {
@@ -154,7 +154,7 @@ namespace ObserverDDS
                        catch (SocketException ex)
                        {
                            Debug.WriteLine(ex);
-                         
+
                        }
                        IPEndPoint iP = (IPEndPoint)point;
                        recQueue.Enqueue(new RecviceBuffer() { Point = iP, Data = buf, Len = len });
@@ -165,11 +165,9 @@ namespace ObserverDDS
                        }
                    }
                    isRecStop = true;
-               })
-            {
-                IsBackground = true,
-                Name = "udpRec"
-            };
+               });
+            udprec.Name = "udpRec";
+            udprec.IsBackground = true;
             if (!udprec.IsAlive)
             {
                 udprec.Start();

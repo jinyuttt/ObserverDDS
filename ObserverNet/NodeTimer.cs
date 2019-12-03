@@ -40,7 +40,7 @@ namespace ObserverDDS
 
         private readonly byte[] tectBytes = new byte[] { 8, 1, 1, 1 };
 
-        private const int WaitTectNum = 100;
+        private const int WaitTectNum = 30;
 
         private int CountUpdateNum = 0;
 
@@ -146,7 +146,7 @@ namespace ObserverDDS
                                         return uDP.Recvice(buf);//有数据返回就说明收到了；
 
                                     });
-                                    if (tsk.Wait(50))
+                                    if (tsk.Wait(100))
                                     {
                                         NodeList.dicRefresh[node] = DateTime.Now.Second;
                                         break;

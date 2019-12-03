@@ -27,6 +27,10 @@ using System.Text;
 
 namespace ObserverDDS
 {
+
+   /// <summary>
+   /// 节点初始化
+   /// </summary>
   public  class ObserverInit
     {
         static object lock_obj = new object();

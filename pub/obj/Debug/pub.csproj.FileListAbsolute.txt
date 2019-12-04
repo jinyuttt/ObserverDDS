@@ -24,3 +24,16 @@ E:\Study\net\ObserverNet\pub\obj\Debug\pub.csprojAssemblyReference.cache
 E:\Study\net\ObserverNet\pub\obj\Debug\pub.csproj.CopyComplete
 E:\Study\net\ObserverNet\pub\obj\Debug\pub.exe
 E:\Study\net\ObserverNet\pub\obj\Debug\pub.pdb
+E:\Study\ObserverNet\ObserverDDS\pub\bin\Debug\pub.exe.config
+E:\Study\ObserverNet\ObserverDDS\pub\bin\Debug\pub.exe
+E:\Study\ObserverNet\ObserverDDS\pub\bin\Debug\pub.pdb
+E:\Study\ObserverNet\ObserverDDS\pub\bin\Debug\ObserverDDS.dll
+E:\Study\ObserverNet\ObserverDDS\pub\bin\Debug\System.Memory.dll
+E:\Study\ObserverNet\ObserverDDS\pub\bin\Debug\System.Buffers.dll
+E:\Study\ObserverNet\ObserverDDS\pub\bin\Debug\System.Numerics.Vectors.dll
+E:\Study\ObserverNet\ObserverDDS\pub\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+E:\Study\ObserverNet\ObserverDDS\pub\bin\Debug\ObserverDDS.pdb
+E:\Study\ObserverNet\ObserverDDS\pub\obj\Debug\pub.csprojAssemblyReference.cache
+E:\Study\ObserverNet\ObserverDDS\pub\obj\Debug\pub.csproj.CopyComplete
+E:\Study\ObserverNet\ObserverDDS\pub\obj\Debug\pub.exe
+E:\Study\ObserverNet\ObserverDDS\pub\obj\Debug\pub.pdb

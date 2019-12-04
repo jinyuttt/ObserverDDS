@@ -276,7 +276,6 @@ namespace ObserverDDS
             try
             {
                 EndPoint point = new IPEndPoint(IPAddress.Any, 0);
-
                 return socket.ReceiveFrom(buf, ref point);
             }
             catch

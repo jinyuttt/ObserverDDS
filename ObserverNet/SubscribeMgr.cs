@@ -85,6 +85,11 @@ namespace ObserverDDS
             }
         }
 
+        /// <summary>
+        /// 移除订阅者
+        /// </summary>
+        /// <param name="subscriber"></param>
+        /// <param name="topic"></param>
         public void Remove(Subscriber subscriber, string topic)
         {
             List<Subscriber> lst = null;

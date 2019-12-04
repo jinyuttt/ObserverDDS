@@ -101,7 +101,6 @@ namespace ObserverDDS
             {
                 case 1:
                     ProcessNewToic(data, len);
-
                     break;
 
                 case 4:
@@ -166,7 +165,7 @@ namespace ObserverDDS
             //添加本地
             List<string> lstNew = new List<string>();
             Dictionary<string, List<AddressInfo>> dicNew = new Dictionary<string, List<AddressInfo>>();
-            foreach(var kv in dic)
+            foreach (var kv in dic)
             {
                 string addr = null;
                 foreach (var r in kv.Value)
@@ -174,7 +173,7 @@ namespace ObserverDDS
                     addr += (r + ",");
                 }
                 Debug.WriteLine("ProcessPubLisUpdate:" + addr);
-               var lst= PublishList.Publish.AddNode(kv.Key, kv.Value.ToArray());
+                var lst = PublishList.Publish.AddNode(kv.Key, kv.Value.ToArray());
                 dicNew[kv.Key] = lst;
             }
 
@@ -255,6 +254,9 @@ namespace ObserverDDS
             string id = msg.Substring(0, index);
             NodeList.UpdateListId.Add(long.Parse(id));
             //如果有节点注册，则立即触发一次发布列表刷新
+            var bytes = DataPack.PackTriggerUpdatePublicList(LocalNode.NodeId, PublishList.Publish.CopyAddress());
+            multicast.SendTo(bytes);
+            //立即触发全节点更新
             NodeTimer.Instance.UpdateList();
         }
 

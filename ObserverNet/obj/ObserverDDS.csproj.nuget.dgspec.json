@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Study\\net\\ObserverNet\\ObserverNet\\ObserverDDS.csproj": {}
+    "E:\\Study\\ObserverNet\\ObserverDDS\\ObserverNet\\ObserverDDS.csproj": {}
   },
   "projects": {
-    "E:\\Study\\net\\ObserverNet\\ObserverNet\\ObserverDDS.csproj": {
+    "E:\\Study\\ObserverNet\\ObserverDDS\\ObserverNet\\ObserverDDS.csproj": {
       "version": "1.0.1",
       "restore": {
-        "projectUniqueName": "E:\\Study\\net\\ObserverNet\\ObserverNet\\ObserverDDS.csproj",
+        "projectUniqueName": "E:\\Study\\ObserverNet\\ObserverDDS\\ObserverNet\\ObserverDDS.csproj",
         "projectName": "ObserverDDS",
-        "projectPath": "E:\\Study\\net\\ObserverNet\\ObserverNet\\ObserverDDS.csproj",
+        "projectPath": "E:\\Study\\ObserverNet\\ObserverDDS\\ObserverNet\\ObserverDDS.csproj",
         "packagesPath": "C:\\Users\\jinyu\\.nuget\\packages\\",
-        "outputPath": "E:\\Study\\net\\ObserverNet\\ObserverNet\\obj\\",
+        "outputPath": "E:\\Study\\ObserverNet\\ObserverDDS\\ObserverNet\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jinyu\\AppData\\Roaming\\NuGet\\NuGet.Config",

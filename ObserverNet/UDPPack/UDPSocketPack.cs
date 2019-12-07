@@ -41,8 +41,14 @@ namespace ObserverDDS
 
         readonly UDPSession recsession = new UDPSession();
 
+        /// <summary>
+        /// 接收数据
+        /// </summary>
         readonly ConcurrentQueue<RecviceBuffer> recQueue = new ConcurrentQueue<RecviceBuffer>();
 
+        /// <summary>
+        /// 返回数据
+        /// </summary>
         readonly ConcurrentQueue<RspBuffer> rspQueue = new ConcurrentQueue<RspBuffer>();
 
        
@@ -145,11 +151,10 @@ namespace ObserverDDS
                    int len = 0;
                    while (isRun)
                    {
-
-                       byte[] buf = new byte[UDPPack.PackSize];
+                       RecviceBuffer buffer = BufferCache.Instance.GetBuffer();
                        try
                        {
-                           len = socket.ReceiveFrom(buf, ref point);
+                           len = socket.ReceiveFrom(buffer.Data, ref point);
                        }
                        catch (SocketException ex)
                        {
@@ -157,7 +162,9 @@ namespace ObserverDDS
 
                        }
                        IPEndPoint iP = (IPEndPoint)point;
-                       recQueue.Enqueue(new RecviceBuffer() { Point = iP, Data = buf, Len = len });
+                       buffer.Point = iP;
+                       buffer.Len = len;
+                       recQueue.Enqueue(buffer);
                        if (isProcessRecStop)
                        {
                            isProcessRecStop = false;
@@ -217,12 +224,13 @@ namespace ObserverDDS
                                 if(UDPCall!=null)
                                    UDPCall(this,buf, new SocketRsp() { Address = buffer.Point.Address.ToString(), Port = buffer.Point.Port });
                             }
-                           if(isPspStop)
+                            if(isPspStop)
                             {
                                 isPspStop = false;
                                 ProcessRsp();
                             }
                         }
+                        buffer.Return();
                     }
                 }
                 isProcessRecStop = true;

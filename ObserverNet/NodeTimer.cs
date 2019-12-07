@@ -193,6 +193,8 @@ namespace ObserverDDS
                     //发送列表更新
                     var bytes=  DataPack.PackUpdatePublicList(LocalNode.NodeId, PublishList.Publish.CopyAddress());
                     Multicast.SendTo(bytes);
+                    //组播信息需要桥接
+                    PTPMultCast.Instance.Send(bytes);
                     CountUpdateNum = 0;
                 }
                 else
@@ -212,6 +214,9 @@ namespace ObserverDDS
                         //发送列表更新
                         var bytes = DataPack.PackUpdatePublicList(LocalNode.NodeId, PublishList.Publish.CopyAddress());
                         Multicast.SendTo(bytes);
+                        //组播信息需要桥接
+                        PTPMultCast.Instance.Send(bytes);
+
                         CountUpdateNum = 0;
                     }
                    
@@ -227,7 +232,10 @@ namespace ObserverDDS
         {
             AddressInfo info = new AddressInfo();
             info.Reset(LocalNode.TopicAddress);
-            Multicast.SendTo(DataPack.PackReg(LocalNode.NodeId,info));
+            var tmp = DataPack.PackReg(LocalNode.NodeId, info);
+            Multicast.SendTo(tmp);
+            //组播信息需要桥接
+            PTPMultCast.Instance.Send(tmp);
         }
     }
 }

@@ -20,20 +20,37 @@
 
 
 
-using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Text;
 
 namespace ObserverDDS
 {
-  public  class RecviceBuffer
+    public  class RecviceBuffer
     {
-       
+        private BufferCache cache = null;
+
+        public RecviceBuffer()
+        {
+
+        }
+
+        public RecviceBuffer(BufferCache buffer)
+        {
+            cache = buffer;
+        }
+
         public byte[] Data { get; set; }
 
         public int Len { get; set; }
 
         public IPEndPoint Point { get; set; }
+
+        public void Return()
+        {
+            if(cache!=null)
+            {
+                cache.Add(this);
+            }
+        }
+        
     }
 }

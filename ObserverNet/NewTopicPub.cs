@@ -50,16 +50,19 @@ namespace ObserverDDS
         {
             MulticastSocket multicast = new MulticastSocket();
             int num = WaitNum;
+            var bytes = DataPack.PackNewTopic(topic, LocalNode.NodeId, LocalNode.TopicAddress);
             while (!NodeListener.Instance.IsComplete(topic))
             {
                 num--;
-                multicast.SendTo(DataPack.PackNewTopic(topic, LocalNode.NodeId, LocalNode.TopicAddress));
+                multicast.SendTo(bytes);
                 Thread.Sleep(50);
                if(num<0)
                 {
                     break;
                 }
             }
+            //组播信息需要桥接
+            PTPMultCast.Instance.Send(bytes);
             multicast.Close();
         }
 

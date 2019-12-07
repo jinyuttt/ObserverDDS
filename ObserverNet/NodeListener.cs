@@ -65,6 +65,11 @@ namespace ObserverDDS
                     dicRec.TryRemove(topic, out lst);//无用了
                     return true;
                 }
+                else if(NodeList.LstNodeInfo.Count==2&&lst.Count==2)
+                {
+                    //说明只有2个节点
+                    return true;
+                }
 
 
             }
@@ -94,7 +99,12 @@ namespace ObserverDDS
 
         }
         
-        private void Process(byte[]data,int len)
+        /// <summary>
+        /// 处理接收的组播数据（寻址数据）
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="len"></param>
+        internal void Process(byte[]data,int len)
         {
             //解析数据处理
             switch(data[0])
@@ -137,7 +147,10 @@ namespace ObserverDDS
             if (!string.IsNullOrEmpty(LocalNode.TopicAddress))
             {
                 //还没有完成初始化就不会返回
-                multicast.SendTo(DataPack.PackNewTopicRsp(msg.TopicName, LocalNode.NodeId, LocalNode.TopicAddress));
+                byte[] tmp = DataPack.PackNewTopicRsp(msg.TopicName, LocalNode.NodeId, LocalNode.TopicAddress);
+                multicast.SendTo(tmp);
+                //组播信息需要桥接
+                PTPMultCast.Instance.Send(tmp);
             }
            
         }
@@ -188,6 +201,8 @@ namespace ObserverDDS
                 //如果发布列表有修改不一致，立即触发全网节点更新，但不影响正常的更新顺序
                 var bytes = DataPack.PackTriggerUpdatePublicList(LocalNode.NodeId, PublishList.Publish.CopyAddress());
                 multicast.SendTo(bytes);
+                //组播信息需要桥接
+                PTPMultCast.Instance.Send(bytes);
                 PublishList.Publish.IsUpdate = false;
             }
 
@@ -234,11 +249,7 @@ namespace ObserverDDS
                     SubscribeMgr.Instance.NewTopicRec(kv.Key, kv.Value.ToArray());
                 }
             }
-           
-
-
-
-
+        
         }
 
         /// <summary>
@@ -256,8 +267,12 @@ namespace ObserverDDS
             //如果有节点注册，则立即触发一次发布列表刷新
             var bytes = DataPack.PackTriggerUpdatePublicList(LocalNode.NodeId, PublishList.Publish.CopyAddress());
             multicast.SendTo(bytes);
+
             //立即触发全节点更新
             NodeTimer.Instance.UpdateList();
+
+            //组播信息需要桥接
+            PTPMultCast.Instance.Send(bytes);
         }
 
         /// <summary>

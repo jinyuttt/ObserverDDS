@@ -1,4 +1,24 @@
-﻿using System;
+﻿#region << 版 本 注 释 >>
+/*----------------------------------------------------------------
+* 项目名称 ：ObserverDDS
+* 项目描述 ：
+* 类 名 称 ：PTPMultcast
+* 类 描 述 ：
+* 命名空间 ：ObserverDDS
+* 机器名称 ：DESKTOP-1IBOINI
+* CLR 版本 ：4.0.30319.42000
+* 作    者 ：jinyu  
+* 创建时间 ：2019
+* 更新时间 ：2019
+* 版 本 号 ：v1.0.0.0
+*******************************************************************
+* Copyright @ jinyu 2019. All rights reserved.
+*******************************************************************
+//----------------------------------------------------------------*/
+#endregion
+
+
+using System;
 
 namespace ObserverDDS
 {
@@ -8,7 +28,7 @@ namespace ObserverDDS
     /// 替换无法组播通信的网段,相当于桥接功能
     /// 
     /// </summary>
-    public   class PTPMultCast
+    public class PTPMultCast
     {
         public static bool IsPtP = false;
 
@@ -29,17 +49,17 @@ namespace ObserverDDS
         /// </summary>
         public AddressInfo LocalAddress { get; set; }
 
-        public  void Start()
+        public void Start()
         {
-            if(IsPtP&&LocalAddress!=null)
+            if (IsPtP && LocalAddress != null)
             {
-               if(LocalAddress.Protol==0)
+                if (LocalAddress.Protol == 0)
                 {
                     TcpServerSocket tcpServer = new TcpServerSocket();
                     tcpServer.Bind(LocalAddress.Port);
                     tcpServer.CallSrv += TcpServer_CallSrv;
                 }
-               else
+                else
                 {
                     UDPSocketPack uDP = new UDPSocketPack();
                     uDP.Bind(LocalAddress.Port, LocalAddress.Address);
@@ -51,7 +71,7 @@ namespace ObserverDDS
         private void UDP_UDPCall(object sender, byte[] data, SocketRsp rsp)
         {
             NodeListener.Instance.Process(data, data.Length);
-           
+
         }
 
         private void TcpServer_CallSrv(System.Buffers.ArrayPool<byte> pool, byte[] data, int len, SocketRsp rsp)
@@ -69,8 +89,8 @@ namespace ObserverDDS
             }
             if (RemoteAddress.Protol == 0)
             {
-                TcpClientSocket   tcpClient= new TcpClientSocket() { RemoteHost = RemoteAddress.Address, RemotePort = RemoteAddress.Port };
-                if(tcpClient.Connect())
+                TcpClientSocket tcpClient = new TcpClientSocket() { RemoteHost = RemoteAddress.Address, RemotePort = RemoteAddress.Port };
+                if (tcpClient.Connect())
                 {
                     tcpClient.Send(data);
                 }
@@ -83,6 +103,7 @@ namespace ObserverDDS
                 uDP.Stop();
             }
         }
-       
+
     }
 }
+

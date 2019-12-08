@@ -5,3 +5,10 @@ E:\Study\net\ObserverNet\ObserverNet\obj\Release\netstandard2.0\ObserverDDS.Asse
 E:\Study\net\ObserverNet\ObserverNet\obj\Release\netstandard2.0\ObserverDDS.AssemblyInfo.cs
 E:\Study\net\ObserverNet\ObserverNet\obj\Release\netstandard2.0\ObserverDDS.dll
 E:\Study\net\ObserverNet\ObserverNet\obj\Release\netstandard2.0\ObserverDDS.pdb
+E:\Study\ObserverNet\ObserverDDS\ObserverNet\bin\Release\netstandard2.0\ObserverDDS.deps.json
+E:\Study\ObserverNet\ObserverDDS\ObserverNet\bin\Release\netstandard2.0\ObserverDDS.dll
+E:\Study\ObserverNet\ObserverDDS\ObserverNet\bin\Release\netstandard2.0\ObserverDDS.pdb
+E:\Study\ObserverNet\ObserverDDS\ObserverNet\obj\Release\netstandard2.0\ObserverDDS.AssemblyInfoInputs.cache
+E:\Study\ObserverNet\ObserverDDS\ObserverNet\obj\Release\netstandard2.0\ObserverDDS.AssemblyInfo.cs
+E:\Study\ObserverNet\ObserverDDS\ObserverNet\obj\Release\netstandard2.0\ObserverDDS.dll
+E:\Study\ObserverNet\ObserverDDS\ObserverNet\obj\Release\netstandard2.0\ObserverDDS.pdb

@@ -41,6 +41,8 @@ namespace ObserverDDS
 
         readonly UDPSession recsession = new UDPSession();
 
+        BlockingCollection<RecviceBuffer> block = new BlockingCollection<RecviceBuffer>();
+
         /// <summary>
         /// 接收数据
         /// </summary>
@@ -221,8 +223,24 @@ namespace ObserverDDS
                                 {
                                     UDPPackProcess.Instance.dicFilter[buffer.Point.ToString() + "," + p.SessionId] =DateTime.Now.Second;
                                 }
-                                if(UDPCall!=null)
-                                   UDPCall(this,buf, new SocketRsp() { Address = buffer.Point.Address.ToString(), Port = buffer.Point.Port });
+                                if (UDPCall != null)
+                                {
+                                    UDPCall(this, buf, new SocketRsp() { Address = buffer.Point.Address.ToString(), Port = buffer.Point.Port });
+                                }
+                                else
+                                {
+                                    //只能复制
+                                    var tmp = new RecviceBuffer
+                                    {
+                                        Data = new byte[buffer.Data.Length],
+                                         Len= buffer.Len
+                                };
+                                    Array.Copy(buffer.Data, 0, tmp.Data, 0, tmp.Data.Length);
+                                  
+                                 
+                                    block.Add(tmp);
+                                }
+
                             }
                             if(isPspStop)
                             {
@@ -283,8 +301,11 @@ namespace ObserverDDS
         {
             try
             {
-                EndPoint point = new IPEndPoint(IPAddress.Any, 0);
-                return socket.ReceiveFrom(buf, ref point);
+              var  rec=  block.Take();
+                Array.Copy(rec.Data, 0, buf, 0, rec.Len);
+                return rec.Len;
+              //  EndPoint point = new IPEndPoint(IPAddress.Any, 0);
+               // return socket.ReceiveFrom(buf, ref point);
             }
             catch
             {
@@ -300,6 +321,7 @@ namespace ObserverDDS
         {
             isRun = false;
             socket.Close();
+            block.Dispose();
         }
 
         //接收返回户关闭

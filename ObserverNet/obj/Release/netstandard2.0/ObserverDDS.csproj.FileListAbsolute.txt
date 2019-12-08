@@ -12,3 +12,4 @@ E:\Study\ObserverNet\ObserverDDS\ObserverNet\obj\Release\netstandard2.0\Observer
 E:\Study\ObserverNet\ObserverDDS\ObserverNet\obj\Release\netstandard2.0\ObserverDDS.AssemblyInfo.cs
 E:\Study\ObserverNet\ObserverDDS\ObserverNet\obj\Release\netstandard2.0\ObserverDDS.dll
 E:\Study\ObserverNet\ObserverDDS\ObserverNet\obj\Release\netstandard2.0\ObserverDDS.pdb
+E:\Study\ObserverNet\ObserverDDS\ObserverNet\obj\Release\netstandard2.0\ObserverDDS.csprojAssemblyReference.cache

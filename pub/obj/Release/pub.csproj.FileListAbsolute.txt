@@ -11,3 +11,5 @@ E:\Study\ObserverNet\ObserverDDS\pub\obj\Release\pub.csprojAssemblyReference.cac
 E:\Study\ObserverNet\ObserverDDS\pub\obj\Release\pub.csproj.CopyComplete
 E:\Study\ObserverNet\ObserverDDS\pub\obj\Release\pub.exe
 E:\Study\ObserverNet\ObserverDDS\pub\obj\Release\pub.pdb
+E:\Study\ObserverNet\ObserverDDS\pub\bin\Release\ObjectDDS.dll
+E:\Study\ObserverNet\ObserverDDS\pub\bin\Release\ObjectDDS.pdb

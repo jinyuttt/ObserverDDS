@@ -1,0 +1,11 @@
+E:\Study\ObserverNet\ObserverDDS\ObjectDDS\bin\Release\netstandard2.0\ObjectDDS.deps.json
+E:\Study\ObserverNet\ObserverDDS\ObjectDDS\bin\Release\netstandard2.0\ObjectDDS.dll
+E:\Study\ObserverNet\ObserverDDS\ObjectDDS\bin\Release\netstandard2.0\ObserverDDS.dll
+E:\Study\ObserverNet\ObserverDDS\ObjectDDS\bin\Release\netstandard2.0\ObserverDDS.pdb
+E:\Study\ObserverNet\ObserverDDS\ObjectDDS\obj\Release\netstandard2.0\ObjectDDS.csprojAssemblyReference.cache
+E:\Study\ObserverNet\ObserverDDS\ObjectDDS\obj\Release\netstandard2.0\ObjectDDS.AssemblyInfoInputs.cache
+E:\Study\ObserverNet\ObserverDDS\ObjectDDS\obj\Release\netstandard2.0\ObjectDDS.AssemblyInfo.cs
+E:\Study\ObserverNet\ObserverDDS\ObjectDDS\obj\Release\netstandard2.0\ObjectDDS.csproj.CopyComplete
+E:\Study\ObserverNet\ObserverDDS\ObjectDDS\bin\Release\netstandard2.0\ObjectDDS.pdb
+E:\Study\ObserverNet\ObserverDDS\ObjectDDS\obj\Release\netstandard2.0\ObjectDDS.dll
+E:\Study\ObserverNet\ObserverDDS\ObjectDDS\obj\Release\netstandard2.0\ObjectDDS.pdb

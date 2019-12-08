@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ObjectDDS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,13 +12,16 @@ namespace pub
     {
         static void Main(string[] args)
         {
-            ObserverDDS.NetPublisher publisher = new ObserverDDS.NetPublisher();
-            string str = DateTime.Now.Second.ToString();
-            while(true)
-            {
-                publisher.Publish("test", Encoding.Default.GetBytes(str+"_"+DateTime.Now.ToString()));
-                Thread.Sleep(1000);
-            }
+            //ObserverDDS.NetPublisher publisher = new ObserverDDS.NetPublisher();
+            //string str = DateTime.Now.Second.ToString();
+            //while(true)
+            //{
+            //    publisher.Publish("test", Encoding.Default.GetBytes(str+"_"+DateTime.Now.ToString()));
+            //    Thread.Sleep(1000);
+            //}
+            Person person = new Person() { Age = 23, Name = "jason" };
+           var p= MsgSerializer.Serializer.Serialize(person);
+         var m=   MsgSerializer.Serializer.DeSerialize<Person>(p);
         }
     }
 }

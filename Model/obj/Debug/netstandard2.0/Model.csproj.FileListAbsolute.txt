@@ -1,8 +1,0 @@
-E:\Study\ObserverDDS\Model\bin\Debug\netstandard2.0\Model.deps.json
-E:\Study\ObserverDDS\Model\bin\Debug\netstandard2.0\Model.dll
-E:\Study\ObserverDDS\Model\bin\Debug\netstandard2.0\Model.pdb
-E:\Study\ObserverDDS\Model\obj\Debug\netstandard2.0\Model.AssemblyInfoInputs.cache
-E:\Study\ObserverDDS\Model\obj\Debug\netstandard2.0\Model.AssemblyInfo.cs
-E:\Study\ObserverDDS\Model\obj\Debug\netstandard2.0\Model.dll
-E:\Study\ObserverDDS\Model\obj\Debug\netstandard2.0\Model.pdb
-E:\Study\ObserverDDS\Model\obj\Debug\netstandard2.0\Model.csprojAssemblyReference.cache

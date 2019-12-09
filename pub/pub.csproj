@@ -59,8 +59,8 @@
       <Project>{f3aae923-5ffa-48d5-88e9-ee43fcdbf740}</Project>
       <Name>Model</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ObjectDDS\ObjectNetDDS.csproj">
-      <Project>{80cfedcc-39d5-4f64-9f2f-bb15cd17a37f}</Project>
+    <ProjectReference Include="..\ObjectNetDDS\ObjectNetDDS.csproj">
+      <Project>{cc750470-57c7-4f14-96c2-a95640b935f5}</Project>
       <Name>ObjectNetDDS</Name>
     </ProjectReference>
     <ProjectReference Include="..\ObserverNet\ObserverDDS.csproj">

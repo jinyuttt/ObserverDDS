@@ -19,4 +19,3 @@ E:\Study\ObserverDDS\ObserverNet\obj\Debug\netstandard2.0\ObserverDDS.AssemblyIn
 E:\Study\ObserverDDS\ObserverNet\obj\Debug\netstandard2.0\ObserverDDS.AssemblyInfo.cs
 E:\Study\ObserverDDS\ObserverNet\obj\Debug\netstandard2.0\ObserverDDS.dll
 E:\Study\ObserverDDS\ObserverNet\obj\Debug\netstandard2.0\ObserverDDS.pdb
-E:\Study\ObserverDDS\ObserverNet\obj\Debug\netstandard2.0\ObserverDDS.csprojAssemblyReference.cache

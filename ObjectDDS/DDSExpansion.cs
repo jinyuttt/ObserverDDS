@@ -22,29 +22,21 @@
 
 using ObserverDDS;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace ObjectDDS
+namespace ObjectNetDDS
 {
-   
-    public static class DDSExpansion
+
+    public  class ObjectPublisher
     {
-        public static  void Publish<T>(this NetPublisher publisher,string topic, T obj)
+        private readonly NetPublisher publisher = new NetPublisher();
+         
+        
+        public   void Publish<T>(string topic, T obj)
         {
            var data= MsgSerializer.Serializer.Serialize(obj);
             publisher.Publish(topic, data);
         }
 
-        public static void Subscribe<T>(this NetSubscriber  subscriber, string topic)
-        {
-            subscriber.Subscribe(topic);
-            subscriber.CallBack += Subscriber_CallBack;
-        }
-
-        private static void Subscriber_CallBack(string topic, byte[] data)
-        {
-           
-        }
+      
     }
 }

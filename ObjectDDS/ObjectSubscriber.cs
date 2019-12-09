@@ -21,42 +21,66 @@
 
 
 using ObserverDDS;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections.Concurrent;
+using MsgPack.Serialization;
+using System.IO;
 
-namespace ObjectDDS
+namespace ObjectNetDDS
 {
     public delegate void SubscriberCallBack<T>(string topic, T data);
 
       
     public  class ObjectSubscriber
     {
-        NetSubscriber subscriber = null;
-        private ConcurrentDictionary<string, Type> dic = new ConcurrentDictionary<string, Type>();
+        readonly NetSubscriber subscriber = null;
+     
+        private ConcurrentDictionary<string, MessagePackSerializer> dicSerializer = new ConcurrentDictionary<string, MessagePackSerializer>();
         public event SubscriberCallBack<object> CallBack;
+
         public ObjectSubscriber()
         {
             subscriber = new NetSubscriber();
+            subscriber.CallBack += CallTopic;
         }
+
+        /// <summary>
+        /// 订阅主题
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="topic"></param>
         public void Subscribe<T>(string topic)
         {
             subscriber.Subscribe(topic);
-            subscriber.CallBack += CallTopic;
-            dic[topic] = typeof(T);
+         
+            dicSerializer[topic] = MsgSerializer.Serializer.GetSerializer<T>();
         }
 
+        /// <summary>
+        /// 取消主题
+        /// </summary>
+        /// <param name="topic"></param>
         public void UnSubscribe(string topic)
         {
             subscriber.UnSubscribe(topic);
-            subscriber.CallBack -= CallTopic;
-          
+         
         }
 
         private void CallTopic(string topic, byte[] data)
         {
-           
+            if (CallBack != null)
+            {
+                object obj = data;
+                MessagePackSerializer serializer = null;
+                if (dicSerializer.TryGetValue(topic, out serializer))
+                {
+                    using (MemoryStream stream = new MemoryStream(data))
+                    {
+                        obj = serializer.Unpack(stream);
+
+                    }
+                }
+                CallBack(topic, obj);
+            }
         }
     }
 }

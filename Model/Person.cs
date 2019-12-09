@@ -26,12 +26,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace pub
+namespace Model
 {
  public   class Person
     {
        public string Name { get; set; }
 
        public int Age { get; set; }
+
+        public int Send { get; set; }
+
+        public override string ToString()
+        {
+            return Name + "_" + Send;
+        }
     }
 }

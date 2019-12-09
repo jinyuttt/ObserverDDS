@@ -10,10 +10,18 @@ namespace sub
     {
         static void Main(string[] args)
         {
-            ObserverDDS.NetSubscriber netSubscriber = new ObserverDDS.NetSubscriber();
-            netSubscriber.Subscribe("test");
-            netSubscriber.CallBack += NetSubscriber_CallBack;
+            //ObserverDDS.NetSubscriber netSubscriber = new ObserverDDS.NetSubscriber();
+            //netSubscriber.Subscribe("test");
+            //netSubscriber.CallBack += NetSubscriber_CallBack;
+            ObjectNetDDS.ObjectSubscriber subscriber = new ObjectNetDDS.ObjectSubscriber();
+            subscriber.Subscribe<Model.Person>("test");
+            subscriber.CallBack += Subscriber_CallBack;
             Console.Read();
+        }
+
+        private static void Subscriber_CallBack(string topic, object data)
+        {
+            Console.WriteLine(topic + ":" + data);
         }
 
         private static void NetSubscriber_CallBack(string topic, byte[] data)

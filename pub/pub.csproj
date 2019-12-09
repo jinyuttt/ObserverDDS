@@ -47,7 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Person.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -56,9 +55,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ObjectDDS\ObjectDDS.csproj">
+    <ProjectReference Include="..\Model\Model.csproj">
+      <Project>{f3aae923-5ffa-48d5-88e9-ee43fcdbf740}</Project>
+      <Name>Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ObjectDDS\ObjectNetDDS.csproj">
       <Project>{80cfedcc-39d5-4f64-9f2f-bb15cd17a37f}</Project>
-      <Name>ObjectDDS</Name>
+      <Name>ObjectNetDDS</Name>
     </ProjectReference>
     <ProjectReference Include="..\ObserverNet\ObserverDDS.csproj">
       <Project>{30815e8f-37cc-439f-9add-757b1adc24c9}</Project>

@@ -21,17 +21,21 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ObserverDDS
 {
-  public  class NetSubscriber
+    public  class NetSubscriber
     {
         readonly Subscriber subscriber = null;
+
+        /// <summary>
+        ///委托回调
+        /// </summary>
         public event CallBackTopic CallBack;
 
         static readonly Lazy<NetSubscriber> obj = new Lazy<NetSubscriber>();
+
+        
 
         public NetSubscriber Instance
         {
@@ -40,18 +44,26 @@ namespace ObserverDDS
         public NetSubscriber()
         {
             subscriber = new Subscriber();
-        }
-        public void Subscribe(string topic)
-        {
-            subscriber.Subscribe(topic);
             subscriber.Call += CallTopic;
         }
 
+        /// <summary>
+        /// 订阅主题
+        /// </summary>
+        /// <param name="topic"></param>
+        public void Subscribe(string topic)
+        {
+            subscriber.Subscribe(topic);
+           
+        }
+
+        /// <summary>
+        /// 取消主题订阅
+        /// </summary>
+        /// <param name="topic"></param>
         public void UnSubscribe(string topic)
         {
             subscriber.UnSubscribe(topic);
-            subscriber.Call -= CallTopic;
-            subscriber.Call = null;
         }
 
         private void CallTopic(string topic,byte[]data)

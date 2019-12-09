@@ -1,0 +1,7 @@
+E:\Study\ObserverDDS\ObserverNet\bin\Debug\netstandard2.1\ObserverDDS.deps.json
+E:\Study\ObserverDDS\ObserverNet\bin\Debug\netstandard2.1\ObserverDDS.dll
+E:\Study\ObserverDDS\ObserverNet\bin\Debug\netstandard2.1\ObserverDDS.pdb
+E:\Study\ObserverDDS\ObserverNet\obj\Debug\netstandard2.1\ObserverDDS.AssemblyInfoInputs.cache
+E:\Study\ObserverDDS\ObserverNet\obj\Debug\netstandard2.1\ObserverDDS.AssemblyInfo.cs
+E:\Study\ObserverDDS\ObserverNet\obj\Debug\netstandard2.1\ObserverDDS.dll
+E:\Study\ObserverDDS\ObserverNet\obj\Debug\netstandard2.1\ObserverDDS.pdb

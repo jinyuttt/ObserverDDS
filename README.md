@@ -18,7 +18,9 @@ NetPublisher为发布类，提供类单例；NetSubscriber为订阅类，提供�
   2019-12  
   1.修改UDP接收问题，同一个Socket多线程接收会轮训，不能及时返回，统一成同一个。  
   2019-12  
-   新增扩展
+   新增扩展ObjectNetDDS项目库
    1.增加MsgPack序列化  
    2.发布序列化对象  
-   3.订阅按照主题返回Object对象 
+   3.订阅按照主题返回Object对象  
+   4.使用：ObjectPublisher，ObjectSubscriber类对象，暂时没有提供单例
+   

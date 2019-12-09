@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>ObserverDDS扩展，发布主题对象，订阅主题对象</Description>
+    <PackageProjectUrl>https://github.com/jinyuttt/ObserverDDS.git</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

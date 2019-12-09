@@ -1154,16 +1154,14 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Study\\ObserverNet\\ObserverDDS\\ObjectDDS\\ObjectDDS.csproj",
-      "projectName": "ObjectDDS",
-      "projectPath": "E:\\Study\\ObserverNet\\ObserverDDS\\ObjectDDS\\ObjectDDS.csproj",
+      "projectUniqueName": "E:\\Study\\ObserverDDS\\ObjectDDS\\ObjectNetDDS.csproj",
+      "projectName": "ObjectNetDDS",
+      "projectPath": "E:\\Study\\ObserverDDS\\ObjectDDS\\ObjectNetDDS.csproj",
       "packagesPath": "C:\\Users\\jinyu\\.nuget\\packages\\",
-      "outputPath": "E:\\Study\\ObserverNet\\ObserverDDS\\ObjectDDS\\obj\\",
+      "outputPath": "E:\\Study\\ObserverDDS\\ObjectDDS\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\jinyu\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress .NET Core Desktop 19.2.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 19.2.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -1171,15 +1169,13 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "d:\\Program Files\\DevExpress 19.2\\.NET Core Desktop Libraries\\System\\Components\\Packages": {},
-        "d:\\Program Files\\DevExpress 19.2\\Components\\System\\Components\\Packages": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "netstandard2.0": {
           "projectReferences": {
-            "E:\\Study\\ObserverNet\\ObserverDDS\\ObserverNet\\ObserverDDS.csproj": {
-              "projectPath": "E:\\Study\\ObserverNet\\ObserverDDS\\ObserverNet\\ObserverDDS.csproj"
+            "E:\\Study\\ObserverDDS\\ObserverNet\\ObserverDDS.csproj": {
+              "projectPath": "E:\\Study\\ObserverDDS\\ObserverNet\\ObserverDDS.csproj"
             }
           }
         }

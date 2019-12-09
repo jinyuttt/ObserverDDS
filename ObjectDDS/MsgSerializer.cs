@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ObjectDDS
+namespace ObjectNetDDS
 {
    public class MsgSerializer
     {
@@ -55,6 +55,13 @@ namespace ObjectDDS
                 var obj = ser.Unpack(memoryStream);
                 return obj;
             }
+        }
+
+        public MessagePackSerializer GetSerializer<T>()
+        {
+            var serializer = MessagePackSerializer.Get<T>();
+
+            return serializer;
         }
     }
 }

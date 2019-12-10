@@ -66,5 +66,24 @@ namespace ObserverDDS
         {
             socket.Close();
         }
+
+        public override bool Equals(object obj)
+        {
+            TcpClientSocket socket = obj as TcpClientSocket;
+             if(socket==null)
+            {
+                return false;
+            }
+             else if(this.RemoteHost==socket.RemoteHost&&socket.RemotePort==RemotePort)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

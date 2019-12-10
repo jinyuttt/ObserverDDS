@@ -41,6 +41,7 @@ namespace ObserverDDS
         /// 用于发布的socket
         /// </summary>
         BlockingCollection<UDPSocketPack> udpSocket = new BlockingCollection<UDPSocketPack>(System.Environment.ProcessorCount/2);
+        
         private  int UdpSocketNum = System.Environment.ProcessorCount/2;
 
         private static readonly Lazy<Publisher> obj = new Lazy<Publisher>();
@@ -206,9 +207,11 @@ namespace ObserverDDS
             {
                 if (p.Protol == 0)
                 {
-                    TcpClientSocket tcp = new TcpClientSocket();
-                    tcp.RemoteHost = p.Address;
-                    tcp.RemotePort = p.Port;
+                    TcpClientSocket tcp = new TcpClientSocket
+                    {
+                        RemoteHost = p.Address,
+                        RemotePort = p.Port
+                    };
                     if (tcp.Connect())
                     {
                         tcp.Send(BitConverter.GetBytes(bytes.Length));

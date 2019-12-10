@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Study\\ObserverDDS\\ObserverNet\\ObserverDDS.csproj": {}
+    "E:\\Study\\ObserverDDS\\Model\\Model.csproj": {}
   },
   "projects": {
-    "E:\\Study\\ObserverDDS\\ObserverNet\\ObserverDDS.csproj": {
-      "version": "1.1.0",
+    "E:\\Study\\ObserverDDS\\Model\\Model.csproj": {
+      "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Study\\ObserverDDS\\ObserverNet\\ObserverDDS.csproj",
-        "projectName": "ObserverDDS",
-        "projectPath": "E:\\Study\\ObserverDDS\\ObserverNet\\ObserverDDS.csproj",
+        "projectUniqueName": "E:\\Study\\ObserverDDS\\Model\\Model.csproj",
+        "projectName": "Model",
+        "projectPath": "E:\\Study\\ObserverDDS\\Model\\Model.csproj",
         "packagesPath": "C:\\Users\\jinyu\\.nuget\\packages\\",
-        "outputPath": "E:\\Study\\ObserverDDS\\ObserverNet\\obj\\",
+        "outputPath": "E:\\Study\\ObserverDDS\\Model\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jinyu\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -45,14 +45,6 @@
               "target": "Package",
               "version": "[2.0.3, )",
               "autoReferenced": true
-            },
-            "System.Buffers": {
-              "target": "Package",
-              "version": "[4.5.0, )"
-            },
-            "System.Memory": {
-              "target": "Package",
-              "version": "[4.5.3, )"
             }
           },
           "imports": [

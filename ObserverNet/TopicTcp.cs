@@ -12,24 +12,38 @@ namespace ObserverDDS
 
         public long Start = DateTime.Now.Ticks;
 
+        
+        /// <summary>
+        /// 使用频率
+        /// </summary>
         public double Rate { get { return Num / (DateTime.Now.Ticks - Start); } }
 
+        /// <summary>
+        /// 刷新
+        /// </summary>
         public void Refresh()
         {
             Interlocked.Increment(ref Num);
         }
 
-        internal void Add(TcpClientSocket socket)
+        /// <summary>
+        /// 添加
+        /// </summary>
+        /// <param name="socket"></param>
+        /// <returns></returns>
+        internal bool Add(TcpClientSocket socket)
         {
             lock(ClientSocket)
             {
                 if(ClientSocket.Contains(socket))
                 {
                     socket.Close();
+                    return false;
                 }
                 else
                 {
                     ClientSocket.Add(socket);
+                    return true;
                 }
             }
         }

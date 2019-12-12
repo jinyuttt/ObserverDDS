@@ -162,39 +162,7 @@ namespace ObserverDDS
             }
         }
 
-        //private void OldCopy()
-        //{
-        //    // UDPSocket uDP = new UDPSocket();
-        //    UDPSocketPack uDP = new UDPSocketPack();
-        //    bool isSucess = false;
-        //    for (int i = 0; i < 20; i++)
-        //    {
-        //        var tsk = Task.Factory.StartNew(() =>
-        //        {
-        //            uDP.Send(p.Address, p.Port, bytes);
-        //            int r = uDP.Recvice(buf);
-        //            if (r > 0)
-        //            {
-        //                lst = DataPack.UnPackCopyRspTopic(buf);
-        //                SubscribeList.Subscribe.AddAddress(topic, lst.ToArray());
-        //            }
-        //        });
-        //        if (tsk.Wait(50))
-        //        {
-        //            //成功就退出
-        //            isSucess = true;
-        //            break;
-        //        }
-
-
-        //    }
-        //    if (isSucess)
-        //    {
-        //        //成功退出外层
-        //        break;
-        //    }
-        //}
-
+      
         /// <summary>
         /// 发送数据
         /// </summary>
@@ -203,21 +171,75 @@ namespace ObserverDDS
         private void PubData(AddressInfo[] lst,string topic, byte[] data)
         {
             byte[] bytes = DataPack.PackTopicData(topic, data);
+            bool findTcp = false;
+            List<AddressInfo> lstTcp = new List<AddressInfo>();
             foreach (var p in lst)
             {
                 if (p.Protol == 0)
                 {
-                    TcpClientSocket tcp = new TcpClientSocket
+                    if(findTcp)
                     {
-                        RemoteHost = p.Address,
-                        RemotePort = p.Port
-                    };
-                    if (tcp.Connect())
-                    {
-                        tcp.Send(BitConverter.GetBytes(bytes.Length));
-                        tcp.Send(bytes);
-                        tcp.Close();
+                        if(lstTcp.Contains(p))
+                        {
+                            continue;//已经处理
+                        }
+                        else
+                        {
+                            TcpClientSocket tcp = new TcpClientSocket
+                            {
+                                RemoteHost = p.Address,
+                                RemotePort = p.Port
+                            };
+                            if (tcp.Connect())
+                            {
+                                tcp.Send(BitConverter.GetBytes(bytes.Length));
+                                tcp.Send(bytes);
+                                ClientProcess.Instance.Update(topic,tcp);
+                                //tcp.Close();
+                            }
+                        }
+                        continue;
                     }
+                   
+                    var lstSocket = ClientProcess.Instance.GetTcpClients(topic);
+                    if(lstSocket!=null)
+                    {
+                        lock (lstSocket)
+                        {
+                            //必须锁定防止处理线程正在关闭
+                            foreach (var tcpClient in lstSocket)
+                            {
+                                try
+                                {
+                                    tcpClient.Send(bytes);
+                                    lstTcp.Add(new AddressInfo() { Address = tcpClient.RemoteHost, Port = tcpClient.RemotePort, Protol = 0 });
+                                }
+                                catch
+                                {
+                                    //有可能正在关闭；
+                                }
+                            }
+                        }
+                    }
+                    //当前第一个地址
+                    if(!lstTcp.Contains(p))
+                    {
+                        TcpClientSocket tcp = new TcpClientSocket
+                        {
+                            RemoteHost = p.Address,
+                            RemotePort = p.Port
+                        };
+                        if (tcp.Connect())
+                        {
+                            tcp.Send(BitConverter.GetBytes(bytes.Length));
+                            tcp.Send(bytes);
+                            ClientProcess.Instance.Update(topic, tcp);
+                            //tcp.Close();
+                        }
+                    }
+                    findTcp = true;//已经完全处理过；
+
+
 
                 }
                 else

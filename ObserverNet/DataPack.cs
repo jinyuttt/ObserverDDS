@@ -71,17 +71,18 @@ namespace ObserverDDS
             TopicMessage message = new TopicMessage();
             byte[] tmp = new byte[count-1];//除去数据标识
             Array.Copy(data, 1, tmp,0, tmp.Length);
-            Span<byte> bytes = tmp;
-            var lenSP=  bytes.Slice(0, 4);
+            Span<byte> bytes = new Span<byte>(tmp);
+            var lenSP = bytes.Slice(0, 4);
             int len = BitConverter.ToInt32(lenSP.ToArray(), 0);
             lenSP = bytes.Slice(4, 4);
             int topicLen = BitConverter.ToInt32(lenSP.ToArray(), 0);
             lenSP = bytes.Slice(8, topicLen);
             string topic = Encoding.Default.GetString(lenSP.ToArray());
-            lenSP = bytes.Slice(8+ topicLen, 8);
-           long id= BitConverter.ToInt32(lenSP.ToArray(), 0);
-            lenSP = bytes.Slice(16 + topicLen, count-1 - 16- topicLen);
-            string addr= Encoding.Default.GetString(lenSP.ToArray());
+            lenSP = bytes.Slice(8 + topicLen, 8);
+            long id = BitConverter.ToInt32(lenSP.ToArray(), 0);
+            lenSP = bytes.Slice(16 + topicLen, count - 1 - 16 - topicLen);
+            string addr = Encoding.Default.GetString(lenSP.ToArray());
+          
             message.Address = addr;
             message.NodeId = id;
             message.TopicName = topic;
